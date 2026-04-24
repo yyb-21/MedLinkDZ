@@ -1,0 +1,9 @@
+.home-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-content {
+  background-color: var(--color-bg-body);
+  flex: 1;
+}

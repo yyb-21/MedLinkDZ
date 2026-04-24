@@ -1,0 +1,46 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: var(--color-bg-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  margin: 1rem 0;
+}
+
+.empty-state-icon-wrapper {
+  background-color: var(--color-bg-body);
+  color: var(--color-text-muted);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state-icon {
+  opacity: 0.6;
+}
+
+.empty-state-title {
+  font-size: 1.125rem;
+  color: var(--color-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-message {
+  color: var(--color-text-muted);
+  max-width: 400px;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+.empty-state-action {
+  display: flex;
+  gap: 1rem;
+}

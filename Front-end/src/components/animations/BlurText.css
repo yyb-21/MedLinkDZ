@@ -1,0 +1,7 @@
+.blur-text-root {
+  display: inline;
+}
+.blur-text-word {
+  display: inline-block;
+  will-change: opacity, filter, transform;
+}

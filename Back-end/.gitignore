@@ -1,0 +1,34 @@
+# Linter
+.eslintcache
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node modules
+node_modules/
+jspm_packages/
+
+# Env Variables (Keep private!)
+.env
+.env.test
+.env.production
+.env.local
+
+# Uploaded Files (User generated content)
+uploads/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Mac OS
+.DS_Store
+
+# Windows
+Thumbs.db

@@ -1,0 +1,46 @@
+.select-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.select-field {
+  width: 100%;
+  padding: 0.65rem 2.25rem 0.65rem 2.5rem;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--c-text-primary);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-md);
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.select-field:focus {
+  border-color: var(--c-border-glow);
+  background: rgba(16,185,129,0.04);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+}
+
+.select-field option { background: var(--c-bg-surface); color: var(--c-text-primary); }
+
+.select-icon-left {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--c-text-muted);
+  pointer-events: none;
+  transition: color 0.2s;
+}
+
+.select-icon-right {
+  position: absolute;
+  right: 0.75rem;
+  color: var(--c-text-muted);
+  pointer-events: none;
+}
+
+.select-wrapper:focus-within .select-icon-left { color: var(--c-green-400); }
