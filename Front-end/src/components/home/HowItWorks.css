@@ -15,6 +15,11 @@
   margin-bottom: 4rem;
 }
 
+.hiw-head .section-subtitle {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .hiw-steps {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -28,6 +33,9 @@
   padding: 2.25rem 1.75rem;
   transition: transform 0.3s ease;
   overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .hiw-step:hover { transform: translateY(-6px); }
@@ -71,6 +79,7 @@
   font-size: 0.9rem;
   color: var(--c-text-secondary);
   line-height: 1.65;
+  flex-grow: 1;
 }
 
 .hiw-connector {

@@ -90,9 +90,7 @@ export default function HeroSection() {
           >
             <BlurText text="Trouvez les médicaments" delay={60} />
             <br />
-            <span className="gradient-text">
-              <BlurText text="dont vous avez besoin," delay={60} />
-            </span>
+            <BlurText text="dont vous avez besoin," delay={60} className="hero-teal-text" />
             <br />
             <BlurText text="rapidement." delay={60} />
           </motion.h1>
@@ -104,7 +102,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.6 }}
           >
-            MedLink DZ connecte patients, pharmacies et donateurs pour faciliter l'accès aux traitements essentiels à travers les 58 wilayas d'Algérie.
+            MedLink DZ connecte patients, pharmacies et donateurs pour faciliter l'accès aux traitements essentiels à travers les 69 wilayas d'Algérie.
           </motion.p>
 
           {/* Search Box */}

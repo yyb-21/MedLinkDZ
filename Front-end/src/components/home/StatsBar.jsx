@@ -23,7 +23,7 @@ function useCountUp(target, inView, duration = 1800) {
 
 const STATS = [
   { icon: Activity, label: 'Annonces Actives', value: 1245, suffix: '+', color: '#10b981' },
-  { icon: MapPin, label: 'Wilayas Couvertes', value: 58, suffix: '', color: '#14b8a6' },
+  { icon: MapPin, label: 'Wilayas Couvertes', value: 69, suffix: '', color: '#14b8a6' },
   { icon: Pill, label: 'Médicaments Disponibles', value: 340, suffix: '+', color: '#34d399' },
 ];
 

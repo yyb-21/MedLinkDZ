@@ -5,6 +5,7 @@ import AnnonceCard from '../annonces/AnnonceCard';
 import PremiumButton from '../ui/PremiumButton';
 import FadeUp from '../animations/FadeUp';
 import MagnetButton from '../animations/MagnetButton';
+import { CardSkeleton } from '../ui/Skeleton';
 import './RecentAnnonces.css';
 
 const MOCK_ANNONCES = [
@@ -18,6 +19,12 @@ const MOCK_ANNONCES = [
 
 export default function RecentAnnonces() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 900);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <section className="recent-section">
@@ -44,9 +51,15 @@ export default function RecentAnnonces() {
         </FadeUp>
 
         <div className="annonces-masonry">
-          {MOCK_ANNONCES.map((a, i) => (
-            <AnnonceCard key={a.id} annonce={a} index={i} />
-          ))}
+          {isLoading ? (
+            [...Array(6)].map((_, i) => (
+              <CardSkeleton key={i} />
+            ))
+          ) : (
+            MOCK_ANNONCES.map((a, i) => (
+              <AnnonceCard key={a.id} annonce={a} index={i} />
+            ))
+          )}
         </div>
       </div>
     </section>

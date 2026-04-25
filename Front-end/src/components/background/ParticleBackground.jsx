@@ -1,8 +1,13 @@
 import React, { useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 export default function ParticleBackground() {
   const canvasRef = useRef(null);
   const animFrameRef = useRef(null);
+  
+  const { scrollY } = useScroll();
+  const parallaxY = useTransform(scrollY, [0, 2000], [0, -300]);
+
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -92,11 +97,14 @@ export default function ParticleBackground() {
 
   return (
     <>
-      <div className="mesh-bg">
+      <motion.div className="mesh-bg" style={{ y: parallaxY }}>
         <div className="mesh-blob mesh-blob-1" />
         <div className="mesh-blob mesh-blob-2" />
         <div className="mesh-blob mesh-blob-3" />
-      </div>
+        {/* Extra blobs for long scroll coverage */}
+        <div className="mesh-blob mesh-blob-4" />
+        <div className="mesh-blob mesh-blob-5" />
+      </motion.div>
       <canvas ref={canvasRef} className="particles-canvas" />
     </>
   );

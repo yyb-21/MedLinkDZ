@@ -4,10 +4,11 @@ import { Search, PenSquare, HeartHandshake } from 'lucide-react';
 import FadeUp from '../animations/FadeUp';
 import './HowItWorks.css';
 
+const STEP_COLOR = '#10b981';
 const STEPS = [
-  { id: 1, icon: Search, title: 'Recherchez', color: '#10b981', desc: 'Trouvez facilement le médicament dont vous avez besoin parmi des centaines d\'annonces vérifiées.' },
-  { id: 2, icon: PenSquare, title: 'Publiez', color: '#14b8a6', desc: 'Offrez des médicaments non utilisés ou faites une demande en quelques clics, sans frais.' },
-  { id: 3, icon: HeartHandshake, title: 'Connectez-vous', color: '#34d399', desc: 'Entrez en contact sécurisé avec les membres de votre wilaya pour finaliser l\'échange solidaire.' },
+  { id: 1, icon: Search, title: 'Recherchez', desc: 'Trouvez facilement le médicament dont vous avez besoin parmi des centaines d\'annonces vérifiées.' },
+  { id: 2, icon: PenSquare, title: 'Publiez', desc: 'Offrez des médicaments non utilisés ou faites une demande en quelques clics, sans frais.' },
+  { id: 3, icon: HeartHandshake, title: 'Connectez-vous', desc: 'Entrez en contact sécurisé avec les membres de votre wilaya pour finaliser l\'échange solidaire.' },
 ];
 
 export default function HowItWorks() {
@@ -39,16 +40,16 @@ export default function HowItWorks() {
                   <div className="hiw-step__num">{String(step.id).padStart(2, '0')}</div>
 
                   {/* Icon */}
-                  <div className="hiw-step__icon-ring" style={{ '--step-color': step.color }}>
-                    <Icon size={26} style={{ color: step.color }} />
+                  <div className="hiw-step__icon-ring" style={{ '--step-color': STEP_COLOR }}>
+                    <Icon size={26} style={{ color: STEP_COLOR }} />
                   </div>
 
-                  <h3 className="hiw-step__title" style={{ color: step.color }}>{step.title}</h3>
+                  <h3 className="hiw-step__title" style={{ color: STEP_COLOR }}>{step.title}</h3>
                   <p className="hiw-step__desc">{step.desc}</p>
 
                   {/* Decorative line connector */}
                   {i < STEPS.length - 1 && (
-                    <div className="hiw-connector" style={{ '--step-color': step.color }} />
+                    <div className="hiw-connector" style={{ '--step-color': STEP_COLOR }} />
                   )}
                 </div>
               </FadeUp>

@@ -80,7 +80,7 @@
 }
 
 .detail-title {
-  font-size: 1.6rem;
+  font-size: clamp(1.25rem, 5vw, 1.75rem);
   font-weight: 800;
   line-height: 1.3;
   margin-bottom: 1rem;
@@ -245,6 +245,16 @@
 }
 
 @media (max-width: 600px) {
-  .detail-title { font-size: 1.25rem; }
+  .detail-page {
+    padding: 1rem 0 4rem;
+  }
+  .detail-image-wrap {
+    aspect-ratio: 16 / 9; /* Don't eat up vertical space on mobile */
+  }
+  .detail-meta {
+    gap: 0.75rem;
+    flex-direction: column;
+  }
   .detail-info-grid { grid-template-columns: 1fr; }
+  .author-card__actions { flex-direction: column; }
 }

@@ -39,8 +39,12 @@
   gap: 1.5rem;
 }
 
-@media (max-width: 640px) {
-  .section-head { flex-direction: column; align-items: flex-start; }
+@media (max-width: 768px) {
+  .recent-section { padding: 3rem 0; }
+  .section-head { flex-direction: column; align-items: flex-start; gap: 1.25rem; margin-bottom: 2rem; }
+  .section-subtitle { max-width: 100%; }
   .section-head__action { width: 100%; }
-  .section-head__action .prem-btn { width: 100%; justify-content: center; }
+  .section-head__action .magnet-btn,
+  .section-head__action button { width: 100%; }
+  .annonces-masonry { grid-template-columns: 1fr; gap: 1rem; }
 }

@@ -1,22 +1,37 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, HeartPulse } from 'lucide-react';
+import { Mail, Lock, HeartPulse, AlertCircle } from 'lucide-react';
 import Input from '../components/ui/Input';
 import PremiumButton from '../components/ui/PremiumButton';
 import MagnetButton from '../components/animations/MagnetButton';
+import { useAuth } from '../context/AuthContext';
 import './AuthPages.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { login } = useAuth();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const from = location.state?.from?.pathname || '/';
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    setTimeout(() => { setLoading(false); navigate('/'); }, 1500);
+    try {
+      await login(email, password);
+      navigate(from, { replace: true });
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Email ou mot de passe incorrect.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,7 +45,6 @@ export default function LoginPage() {
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
         >
-          {/* Logo */}
           <div className="auth-logo">
             <div className="auth-logo__icon">
               <HeartPulse size={22} />
@@ -51,6 +65,12 @@ export default function LoginPage() {
             <Input label="Mot de passe" type="password" id="login-pass" icon={Lock}
               placeholder="••••••••" value={password}
               onChange={(e) => setPassword(e.target.value)} required />
+
+            {error && (
+              <div className="auth-error" role="alert">
+                <AlertCircle size={14} /> {error}
+              </div>
+            )}
 
             <div className="auth-forgot">
               <a href="#" className="forgot-link">Mot de passe oublié ?</a>

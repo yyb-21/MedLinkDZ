@@ -2,9 +2,10 @@
   position: relative;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
-.select-field {
+.select-field-display {
   width: 100%;
   padding: 0.65rem 2.25rem 0.65rem 2.5rem;
   font-family: inherit;
@@ -13,20 +14,30 @@
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--c-border);
   border-radius: var(--r-md);
-  -webkit-appearance: none;
-  appearance: none;
-  cursor: pointer;
-  outline: none;
   transition: all 0.2s ease;
+  user-select: none;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.select-field:focus {
+.select-field-display.is-placeholder {
+  color: var(--c-text-muted);
+}
+
+.select-wrapper:hover .select-field-display {
+  border-color: rgba(16,185,129,0.3);
+  background: rgba(16,185,129,0.02);
+}
+
+.select-wrapper.is-open .select-field-display {
   border-color: var(--c-border-glow);
   background: rgba(16,185,129,0.04);
   box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
 }
-
-.select-field option { background: var(--c-bg-surface); color: var(--c-text-primary); }
 
 .select-icon-left {
   position: absolute;
@@ -34,6 +45,7 @@
   color: var(--c-text-muted);
   pointer-events: none;
   transition: color 0.2s;
+  z-index: 10;
 }
 
 .select-icon-right {
@@ -41,6 +53,83 @@
   right: 0.75rem;
   color: var(--c-text-muted);
   pointer-events: none;
+  z-index: 10;
 }
 
-.select-wrapper:focus-within .select-icon-left { color: var(--c-green-400); }
+.select-wrapper.is-open .select-icon-left,
+.select-wrapper.is-open .select-icon-right { 
+  color: var(--c-green-400); 
+}
+
+/* === Custom Dropdown Menu === */
+.select-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: max-content;
+  min-width: 100%;
+  max-width: 300px;
+  background: var(--c-bg-surface); /* Solid deep blue matching the theme cards */
+  border: 1px solid var(--c-green-400); /* Thin solid neon green */
+  border-radius: var(--r-md);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 15px rgba(16,185,129,0.15);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.select-dropdown.opens-up {
+  top: auto;
+  bottom: calc(100% + 8px);
+}
+
+.select-options-list {
+  list-style: none;
+  padding: 0.5rem 0;
+  margin: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.select-option {
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  color: var(--c-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap; /* Prevents long wilaya names from breaking onto multiple lines */
+}
+
+.wi-id {
+  font-weight: 700;
+  color: var(--c-green-400);
+}
+
+.select-option:hover {
+  background: rgba(16,185,129,0.1);
+  color: var(--c-text-primary);
+}
+
+.select-option.is-selected {
+  background: linear-gradient(90deg, rgba(16,185,129,0.15), transparent);
+  color: var(--c-text-primary);
+  border-left: 2px solid var(--c-green-400);
+}
+
+/* Custom Scrollbar specifically for the select list */
+.select-options-list::-webkit-scrollbar {
+  width: 6px;
+}
+.select-options-list::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.2);
+}
+.select-options-list::-webkit-scrollbar-thumb {
+  background: rgba(16,185,129,0.3);
+  border-radius: 4px;
+}
+.select-options-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(16,185,129,0.5);
+}

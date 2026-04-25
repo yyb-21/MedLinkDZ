@@ -5,6 +5,7 @@ import AnnonceCard from '../components/annonces/AnnonceCard';
 import WilayaSelect from '../components/ui/WilayaSelect';
 import PremiumButton from '../components/ui/PremiumButton';
 import FadeUp from '../components/animations/FadeUp';
+import Skeleton, { CardSkeleton } from '../components/ui/Skeleton';
 import './SearchPage.css';
 
 const CATEGORIES = ['Tous', 'Antibiotiques', 'Cardiovasculaire', 'Diabète', 'Neurologie', 'Oncologie', 'Dermatologie', 'Pédiatrie', 'Ophtalmologie'];
@@ -27,6 +28,13 @@ export default function SearchPage() {
   const [selectedCategory, setSelectedCategory] = useState('Tous');
   const [selectedWilaya, setSelectedWilaya] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate initial loading
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filtered = useMemo(() => {
     return MOCK_ANNONCES.filter(a => {
@@ -51,7 +59,7 @@ export default function SearchPage() {
               Rechercher un <span className="gradient-text">médicament</span>
             </h1>
             <p className="search-hero__sub">
-              Parcourez {MOCK_ANNONCES.length}+ annonces vérifiées à travers les 58 wilayas.
+              Parcourez {MOCK_ANNONCES.length}+ annonces vérifiées à travers les 69 wilayas.
             </p>
           </FadeUp>
 
@@ -163,23 +171,31 @@ export default function SearchPage() {
             </span>
           </div>
 
-          {filtered.length > 0 ? (
-            <div className="search-results__grid">
-              {filtered.map((a, i) => (
-                <AnnonceCard key={a.id} annonce={a} index={i} />
-              ))}
-            </div>
-          ) : (
-            <FadeUp>
-              <div className="search-empty glass">
-                <Search size={48} className="search-empty__icon" />
-                <h3 className="search-empty__title">Aucun résultat trouvé</h3>
-                <p className="search-empty__desc">
-                  Essayez de modifier vos filtres ou votre recherche.
-                </p>
+          <div className="search-results-content">
+            {isLoading ? (
+              <div className="search-results__grid">
+                {[...Array(6)].map((_, i) => (
+                  <CardSkeleton key={i} />
+                ))}
               </div>
-            </FadeUp>
-          )}
+            ) : filtered.length > 0 ? (
+              <div className="search-results__grid">
+                {filtered.map((a, i) => (
+                  <AnnonceCard key={a.id} annonce={a} index={i} />
+                ))}
+              </div>
+            ) : (
+              <FadeUp>
+                <div className="search-empty glass">
+                  <Search size={48} className="search-empty__icon" />
+                  <h3 className="search-empty__title">Aucun résultat trouvé</h3>
+                  <p className="search-empty__desc">
+                    Essayez de modifier vos filtres ou votre recherche.
+                  </p>
+                </div>
+              </FadeUp>
+            )}
+          </div>
         </div>
       </section>
     </div>

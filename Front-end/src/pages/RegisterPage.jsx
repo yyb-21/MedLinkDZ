@@ -1,23 +1,41 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User, Phone, HeartPulse } from 'lucide-react';
+import { Mail, Lock, User, Phone, HeartPulse, AlertCircle } from 'lucide-react';
 import Input from '../components/ui/Input';
 import PremiumButton from '../components/ui/PremiumButton';
 import WilayaSelect from '../components/ui/WilayaSelect';
 import MagnetButton from '../components/animations/MagnetButton';
+import { useAuth } from '../context/AuthContext';
 import './AuthPages.css';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '', wilaya: '' });
   const [loading, setLoading] = useState(false);
-  const set = (k) => (e) => setForm({...form, [k]: e.target.value});
+  const [error, setError] = useState(null);
+  const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
-    setTimeout(() => { setLoading(false); navigate('/'); }, 1500);
+    try {
+      await register({
+        prenom: form.firstName,
+        nom: form.lastName,
+        email: form.email,
+        telephone: form.phone,
+        password: form.password,
+        wilaya: form.wilaya,
+      });
+      navigate('/', { replace: true });
+    } catch (err) {
+      setError(err?.response?.data?.message || "Impossible de créer le compte. Vérifiez vos informations.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -53,10 +71,16 @@ export default function RegisterPage() {
 
             <div className="form-row">
               <Input label="Téléphone" type="tel" id="reg-phone" icon={Phone} placeholder="05xx xx xx xx" required value={form.phone} onChange={set('phone')} />
-              <WilayaSelect label="Wilaya" value={form.wilaya} onChange={(v) => setForm({...form, wilaya: v})} required />
+              <WilayaSelect label="Wilaya" value={form.wilaya} onChange={(v) => setForm({ ...form, wilaya: v })} required />
             </div>
 
             <Input label="Mot de passe" type="password" id="reg-pass" icon={Lock} placeholder="Min. 8 caractères" required value={form.password} onChange={set('password')} />
+
+            {error && (
+              <div className="auth-error" role="alert">
+                <AlertCircle size={14} /> {error}
+              </div>
+            )}
 
             <div className="auth-terms">
               <input type="checkbox" id="terms" required />

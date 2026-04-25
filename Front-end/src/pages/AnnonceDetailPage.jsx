@@ -33,6 +33,9 @@ export default function AnnonceDetailPage() {
   const [liked, setLiked] = useState(false);
   const [showContact, setShowContact] = useState(false);
 
+  // Use a hardcoded value for now to match ProtectedRoute logic
+  const isAuthenticated = true;
+
   // In real app, fetch by id. Using mock data for now.
   const annonce = MOCK_ANNONCE;
 
@@ -121,8 +124,12 @@ export default function AnnonceDetailPage() {
                   <span className="author-card__stat-lbl">annonces publiées</span>
                 </div>
 
-                {/* CTA */}
-                {!showContact ? (
+                {/* CTA - Gated Authentication */}
+                {!isAuthenticated ? (
+                  <PremiumButton variant="primary" fullWidth icon={Phone} onClick={() => navigate('/login')}>
+                    Connectez-vous pour voir
+                  </PremiumButton>
+                ) : !showContact ? (
                   <PremiumButton variant="primary" fullWidth icon={Phone} onClick={() => setShowContact(true)}>
                     Afficher le contact
                   </PremiumButton>

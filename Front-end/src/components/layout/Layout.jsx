@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
+import MobileNav from './MobileNav';
 import Footer from './Footer';
 import ParticleBackground from '../background/ParticleBackground';
 import '../../styles/background.css';
@@ -15,6 +16,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <Footer />
+      <MobileNav />
     </div>
   );
 }
