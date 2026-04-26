@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "description": "MedLink DZ — plateforme d'entraide médicale (frontend + backend)",
   "scripts": {
-    "dev": "concurrently -n backend,frontend -c green,cyan \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+    "dev": "vite",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
@@ -12,6 +12,16 @@
     "start": "npm --prefix backend run start"
   },
   "devDependencies": {
-    "concurrently": "^9.0.1"
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.0.1",
+    "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "axios": "^1.15.2",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^1.11.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.14.2"
   }
 }
