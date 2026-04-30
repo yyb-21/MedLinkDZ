@@ -16,7 +16,7 @@ export const createUser = async (userData) => {
 export const findUserByEmail = async (email) => {
     const query = 'SELECT * FROM users WHERE email = $1';
     const result = await pool.query(query, [email]);
-    return result.rows.length > 0 ? result.rows[0] : null;
+    return result.rows[0] || null;
 };
 
 // Find a user by ID (excludes password_hash)
