@@ -2,6 +2,12 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+//allow the browser to connect to our server (APIs)
+import cors from 'cors'; 
+app.use(cors({
+  origin: 'http://localhost:3000' 
+}));
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 
