@@ -34,7 +34,7 @@ export default function ProfilPage() {
         nom: user.nom || '',
         prenom: user.prenom || '',
         telephone: user.telephone || '',
-        wilaya: user.wilaya || '',
+        wilaya: user.wilaya || ''
       });
     }
   }, [user]);

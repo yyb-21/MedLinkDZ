@@ -32,6 +32,7 @@ app.use('/api/catalog', catalogRoutes);
 app.use('/api/ordonnances', ordonnanceRoutes);
 app.use('/api/admin', adminRoutes);
 
+
 // Health check
 app.get('/', (req, res) => {
     res.json({ success: true, message: 'Backend MedLink DZ API en cours d\'exécution.' });
