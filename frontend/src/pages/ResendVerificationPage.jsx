@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, HeartPulse, AlertCircle } from 'lucide-react';
+import { Mail, HeartPulse, AlertCircle } from 'lucide-react';
 import Input from '../components/ui/Input';
 import PremiumButton from '../components/ui/PremiumButton';
 import MagnetButton from '../components/animations/MagnetButton';
 import { authApi } from '../services/api';
 import './AuthPages.css';
 
-export default function ResetPasswordPage() {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-  const [token, setToken] = useState(searchParams.get('token') || '');
-  const [newPassword, setNewPassword] = useState('');
+export default function ResendVerificationPage() {
+  const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -24,13 +21,10 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     try {
-      await authApi.resetPassword({ token, newPassword });
-      setMessage('Votre mot de passe a bien été réinitialisé.');
-      setTimeout(() => {
-        navigate('/login');
-      }, 1500);
+      const res = await authApi.resendVerification({ email: email.trim().toLowerCase() });
+      setMessage(res.message || 'Si cet email existe, un email de vérification a été renvoyé.');
     } catch (err) {
-      setError(err?.response?.data?.message || 'Impossible de réinitialiser le mot de passe.');
+      setError(err?.response?.data?.message || 'Impossible de renvoyer l’email pour le moment.');
     } finally {
       setLoading(false);
     }
@@ -55,30 +49,19 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className="auth-header">
-            <h1 className="auth-title">Réinitialiser le mot de passe</h1>
-            <p className="auth-subtitle">Entrez le jeton reçu et définissez un nouveau mot de passe.</p>
+            <h1 className="auth-title">Renvoyer l'email de vérification</h1>
+            <p className="auth-subtitle">Entrez l'email que vous avez utilisé pour vous inscrire.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
             <Input
-              label="Jeton de réinitialisation"
-              type="text"
-              id="reset-token"
-              placeholder="Collez le jeton ici"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              required
-            />
-
-            <Input
-              label="Nouveau mot de passe"
-              type="password"
-              id="reset-password"
-              icon={Lock}
-              placeholder="••••••••"
-              minLength={8}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              label="Email"
+              type="email"
+              id="resend-email"
+              icon={Mail}
+              placeholder="votre@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
             />
 
@@ -96,7 +79,7 @@ export default function ResetPasswordPage() {
 
             <MagnetButton padding={50} className="w-full">
               <PremiumButton type="submit" variant="primary" fullWidth size="lg" loading={loading}>
-                Réinitialiser
+                Renvoyer l'email
               </PremiumButton>
             </MagnetButton>
           </form>

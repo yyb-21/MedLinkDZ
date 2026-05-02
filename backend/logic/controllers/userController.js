@@ -1,35 +1,50 @@
 import * as userService from '../services/userService.js';
-import { hashPassword, comparePassword, generateToken, generateResetToken, verifyResetToken } from '../utils/helpers.js';
+import {
+    hashPassword,
+    comparePassword,
+    generateToken,
+    generateResetToken,
+    verifyResetToken,
+    generateVerifyToken,
+    verifyVerifyToken,
+    sendVerificationEmail,
+    sendResetPasswordEmail,
+} from '../utils/helpers.js';
 
 // POST /api/auth/register
 export const registerUser = async (req, res) => {
     const { nom, prenom, email, password, phone } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
 
     try {
         // Validate required fields
-        if (!nom || !prenom || !email || !password) {
+        if (!nom || !prenom || !normalizedEmail || !password) {
             return res.status(400).json({ success: false, message: 'Veuillez remplir tous les champs obligatoires.' });
         }
 
         // Check if email already exists
-        const existingUser = await userService.findUserByEmail(email);
+        const existingUser = await userService.findUserByEmail(normalizedEmail);
         if (existingUser) {
             return res.status(400).json({ success: false, message: 'Un utilisateur avec cet email existe déjà.' });
+        }
+
+        if (password.length < 8) {
+            return res.status(400).json({ success: false, message: 'Le mot de passe doit contenir au moins 8 caractères.' });
         }
 
         // Hash the password before storing
         const password_hash = await hashPassword(password);
 
         // Create the user
-        const newUser = await userService.createUser({ nom, prenom, email, password_hash, phone });
+        const newUser = await userService.createUser({ nom, prenom, email: normalizedEmail, password_hash, phone });
 
-        // Generate JWT token
-        const token = generateToken(newUser);
+        // Send email verification
+        const verificationToken = generateVerifyToken(newUser);
+        await sendVerificationEmail(newUser, verificationToken);
 
         res.status(201).json({
             success: true,
-            message: 'Inscription réussie !',
-            token,
+            message: 'Inscription réussie ! Un email de vérification a été envoyé.',
             user: newUser
         });
     } catch (error) {
@@ -44,14 +59,15 @@ export const registerUser = async (req, res) => {
 // POST /api/auth/login
 export const loginUser = async (req, res) => {
     const { email, password } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
 
     try {
-        if (!email || !password) {
+        if (!normalizedEmail || !password) {
             return res.status(400).json({ success: false, message: 'Email et mot de passe sont requis.' });
         }
 
         // Find user by email
-        const user = await userService.findUserByEmail(email);
+        const user = await userService.findUserByEmail(normalizedEmail);
         
         if (!user) {
             return res.status(401).json({ success: false, message: 'Email ou mot de passe incorrect.' });
@@ -61,6 +77,13 @@ export const loginUser = async (req, res) => {
         const isMatch = await comparePassword(password, user.password_hash);
         if (!isMatch) {
             return res.status(401).json({ success: false, message: 'Email ou mot de passe incorrect.' });
+        }
+
+        if (!user.is_verified) {
+            return res.status(401).json({
+                success: false,
+                message: 'Email non vérifié. Veuillez vérifier votre boîte mail pour activer votre compte.'
+            });
         }
 
         // Generate JWT token
@@ -98,13 +121,14 @@ export const getMe = async (req, res) => {
 // POST /api/auth/forgot-password
 export const forgotPassword = async (req, res) => {
     const { email } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
 
     try {
-        if (!email) {
+        if (!normalizedEmail) {
             return res.status(400).json({ success: false, message: 'Email est requis.' });
         }
 
-        const user = await userService.findUserByEmail(email);
+        const user = await userService.findUserByEmail(normalizedEmail);
         if (!user) {
             return res.status(200).json({
                 success: true,
@@ -113,12 +137,11 @@ export const forgotPassword = async (req, res) => {
         }
 
         const resetToken = generateResetToken(user);
+        await sendResetPasswordEmail(user, resetToken);
 
-        // In production, send `resetToken` by email. For now, return it so the frontend can continue the flow.
         return res.status(200).json({
             success: true,
-            message: 'Token de réinitialisation généré avec succès.',
-            resetToken
+            message: 'Si cet email existe, un lien de réinitialisation a été envoyé.'
         });
     } catch (error) {
         console.error('Error during forgot password:', error);
@@ -133,6 +156,10 @@ export const resetPassword = async (req, res) => {
     try {
         if (!token || !newPassword) {
             return res.status(400).json({ success: false, message: 'Token et nouveau mot de passe sont requis.' });
+        }
+
+        if (newPassword.length < 8) {
+            return res.status(400).json({ success: false, message: 'Le mot de passe doit contenir au moins 8 caractères.' });
         }
 
         let decoded;
@@ -157,6 +184,69 @@ export const resetPassword = async (req, res) => {
     } catch (error) {
         console.error('Error during reset password:', error);
         res.status(500).json({ success: false, message: 'Erreur serveur lors de la réinitialisation du mot de passe.' });
+    }
+};
+
+// GET /api/auth/verify-email
+export const verifyEmail = async (req, res) => {
+    const { token } = req.query;
+
+    try {
+        if (!token) {
+            return res.status(400).json({ success: false, message: 'Token de vérification manquant.' });
+        }
+
+        let decoded;
+        try {
+            decoded = verifyVerifyToken(token);
+        } catch (err) {
+            return res.status(400).json({ success: false, message: 'Token de vérification invalide ou expiré.' });
+        }
+
+        const user = await userService.findUserById(decoded.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Utilisateur non trouvé.' });
+        }
+
+        if (user.is_verified) {
+            return res.status(200).json({ success: true, message: 'Email déjà vérifié.' });
+        }
+
+        await userService.verifyUserEmail(decoded.id);
+
+        res.status(200).json({ success: true, message: 'Email vérifié avec succès.' });
+    } catch (error) {
+        console.error('Error during verify email:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur lors de la vérification de l’email.' });
+    }
+};
+
+// POST /api/auth/resend-verification
+export const resendVerification = async (req, res) => {
+    const { email } = req.body;
+    const normalizedEmail = email?.trim().toLowerCase();
+
+    try {
+        if (!normalizedEmail) {
+            return res.status(400).json({ success: false, message: 'Email est requis.' });
+        }
+
+        const user = await userService.findUserByEmail(normalizedEmail);
+        if (!user) {
+            return res.status(200).json({ success: true, message: 'Si cet email existe, un e-mail de vérification a été renvoyé.' });
+        }
+
+        if (user.is_verified) {
+            return res.status(200).json({ success: true, message: 'Cet email est déjà vérifié.' });
+        }
+
+        const verificationToken = generateVerifyToken(user);
+        await sendVerificationEmail(user, verificationToken);
+
+        res.status(200).json({ success: true, message: 'E-mail de vérification renvoyé avec succès.' });
+    } catch (error) {
+        console.error('Error during resend verification:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur lors de l’envoi de l’email de vérification.' });
     }
 };
 

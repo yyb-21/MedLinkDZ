@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, HeartPulse, AlertCircle } from 'lucide-react';
 import Input from '../components/ui/Input';
@@ -9,9 +9,7 @@ import { authApi } from '../services/api';
 import './AuthPages.css';
 
 export default function ForgotPasswordPage() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState('');
-  const [token, setToken] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -23,11 +21,8 @@ export default function ForgotPasswordPage() {
     setLoading(true);
 
     try {
-      const res = await authApi.forgotPassword({ email });
-      setMessage(res.message || 'Un lien de réinitialisation a été généré.');
-      if (res.resetToken) {
-        setToken(res.resetToken);
-      }
+      const res = await authApi.forgotPassword({ email: email.trim().toLowerCase() });
+      setMessage(res.message || 'Un lien de réinitialisation a été envoyé si l’email existe.');
     } catch (err) {
       setError(err?.response?.data?.message || 'Impossible de demander la réinitialisation pour le moment.');
     } finally {
@@ -55,7 +50,7 @@ export default function ForgotPasswordPage() {
 
           <div className="auth-header">
             <h1 className="auth-title">Mot de passe oublié</h1>
-            <p className="auth-subtitle">Entrez votre email pour recevoir un lien ou un jeton de réinitialisation.</p>
+            <p className="auth-subtitle">Entrez votre email pour recevoir un lien de réinitialisation sécurisé.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="auth-form">
@@ -79,16 +74,6 @@ export default function ForgotPasswordPage() {
             {message && (
               <div className="auth-success" role="status">
                 {message}
-              </div>
-            )}
-
-            {token && (
-              <div className="auth-token">
-                <p>Jeton de réinitialisation généré. Copiez-le ou cliquez sur le lien ci-dessous :</p>
-                <textarea readOnly value={token} rows={3} />
-                <Link to={`/reset-password?token=${encodeURIComponent(token)}`} className="auth-footer__link">
-                  Aller à la réinitialisation du mot de passe
-                </Link>
               </div>
             )}
 

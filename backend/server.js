@@ -4,8 +4,9 @@ dotenv.config();
 
 //allow the browser to connect to our server (APIs)
 import cors from 'cors'; 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 app.use(cors({
-  origin: 'http://localhost:3000' 
+  origin: FRONTEND_URL
 }));
 
 import path from 'path';

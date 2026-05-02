@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, User, Phone, HeartPulse, AlertCircle } from 'lucide-react';
 import Input from '../components/ui/Input';
@@ -10,27 +10,30 @@ import { useAuth } from '../context/AuthContext';
 import './AuthPages.css';
 
 export default function RegisterPage() {
-  const navigate = useNavigate();
   const { register } = useAuth();
   const [form, setForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '', wilaya: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState('');
   const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    setSuccess('');
     setLoading(true);
     try {
-      await register({
+      const res = await register({
         prenom: form.firstName,
         nom: form.lastName,
-        email: form.email,
-        telephone: form.phone,
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone,
         password: form.password,
         wilaya: form.wilaya,
       });
-      navigate('/', { replace: true });
+      if (res.success) {
+        setSuccess(res.message || 'Inscription réussie. Vérifiez votre email pour activer votre compte.');
+      }
     } catch (err) {
       setError(err?.response?.data?.message || "Impossible de créer le compte. Vérifiez vos informations.");
     } finally {
@@ -74,7 +77,7 @@ export default function RegisterPage() {
               <WilayaSelect label="Wilaya" value={form.wilaya} onChange={(v) => setForm({ ...form, wilaya: v })} required />
             </div>
 
-            <Input label="Mot de passe" type="password" id="reg-pass" icon={Lock} placeholder="Min. 8 caractères" required value={form.password} onChange={set('password')} />
+            <Input label="Mot de passe" type="password" id="reg-pass" icon={Lock} placeholder="Min. 8 caractères" minLength={8} required value={form.password} onChange={set('password')} />
 
             {error && (
               <div className="auth-error" role="alert">
@@ -86,6 +89,17 @@ export default function RegisterPage() {
               <input type="checkbox" id="terms" required />
               <label htmlFor="terms">J'accepte les <a href="#">conditions d'utilisation</a> et la <a href="#">politique de confidentialité</a></label>
             </div>
+
+            {success && (
+              <div className="auth-success auth-success--wide" role="status">
+                <strong>Vérification nécessaire</strong>
+                <p>{success}</p>
+                <div className="auth-note" style={{ marginTop: '0.75rem' }}>
+                  Si vous ne trouvez pas l'email, renvoyez-le ici :{' '}
+                  <Link to="/resend-verification" className="auth-footer__link">Renvoyer l'email de vérification</Link>
+                </div>
+              </div>
+            )}
 
             <MagnetButton padding={50} className="w-full">
               <PremiumButton type="submit" variant="primary" fullWidth size="lg" loading={loading}>

@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const showVerifyNotice = error?.includes('Email non vérifié');
   const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e) => {
@@ -25,7 +26,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email.trim().toLowerCase(), password);
       navigate(from, { replace: true });
     } catch (err) {
       setError(err?.response?.data?.message || 'Email ou mot de passe incorrect.');
@@ -72,8 +73,16 @@ export default function LoginPage() {
               </div>
             )}
 
+            {showVerifyNotice && (
+              <div className="auth-note" role="status">
+                <AlertCircle size={14} /> Votre email n'est pas vérifié.{' '}
+                <Link to="/resend-verification" className="auth-footer__link">Renvoyer l'email de vérification</Link>
+              </div>
+            )}
+
             <div className="auth-forgot">
               <Link to="/forgot-password" className="forgot-link">Mot de passe oublié ?</Link>
+              <Link to="/resend-verification" className="forgot-link">Renvoyer l'email de vérification</Link>
             </div>
 
             <MagnetButton padding={50} className="w-full">

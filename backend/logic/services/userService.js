@@ -54,6 +54,18 @@ export const updateUserPassword = async (id, password_hash) => {
     return result.rows[0];
 };
 
+// Verify user email address
+export const verifyUserEmail = async (id) => {
+    const query = `
+        UPDATE users
+        SET is_verified = true
+        WHERE id = $1
+        RETURNING id, nom, prenom, email, phone, role, avatar_url, is_verified, created_at
+    `;
+    const result = await pool.query(query, [id]);
+    return result.rows[0];
+};
+
 // Count total users (for admin stats)
 export const countUsers = async () => {
     const result = await pool.query('SELECT COUNT(*) FROM users');
