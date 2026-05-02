@@ -21,7 +21,21 @@ export const generateToken = (user) => {
     );
 };
 
+// Generate a password reset token
+export const generateResetToken = (user) => {
+    return jwt.sign(
+        { id: user.id, email: user.email },
+        process.env.JWT_SECRET,
+        { expiresIn: '15m' }
+    );
+};
+
 // Verify a JWT token and return the decoded payload
 export const verifyToken = (token) => {
+    return jwt.verify(token, process.env.JWT_SECRET);
+};
+
+// Verify a password reset token and return the decoded payload
+export const verifyResetToken = (token) => {
     return jwt.verify(token, process.env.JWT_SECRET);
 };

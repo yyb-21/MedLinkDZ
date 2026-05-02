@@ -141,7 +141,7 @@
   .auth-card { padding: 1.75rem 1.25rem; }
 }
 
-.auth-error {
+..auth-error {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -154,3 +154,31 @@
   line-height: 1.35;
 }
 .auth-error svg { flex-shrink: 0; color: #dc2626; }
+
+.auth-success {
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #047857;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.auth-token {
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--c-text-secondary);
+}
+
+.auth-token textarea {
+  width: 100%;
+  border-radius: 0.85rem;
+  border: 1px solid var(--c-border);
+  background: var(--c-bg);
+  padding: 0.75rem 0.85rem;
+  font-family: inherit;
+  resize: none;
+  margin-top: 0.75rem;
+}

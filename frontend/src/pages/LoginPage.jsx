@@ -73,7 +73,7 @@ export default function LoginPage() {
             )}
 
             <div className="auth-forgot">
-              <a href="#" className="forgot-link">Mot de passe oublié ?</a>
+              <Link to="/forgot-password" className="forgot-link">Mot de passe oublié ?</Link>
             </div>
 
             <MagnetButton padding={50} className="w-full">

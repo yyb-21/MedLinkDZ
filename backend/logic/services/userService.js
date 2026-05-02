@@ -42,6 +42,18 @@ export const updateUser = async (id, updates) => {
     return result.rows[0];
 };
 
+// Update only the user's password hash
+export const updateUserPassword = async (id, password_hash) => {
+    const query = `
+        UPDATE users
+        SET password_hash = $1
+        WHERE id = $2
+        RETURNING id, nom, prenom, email, phone, role, avatar_url, is_verified, created_at
+    `;
+    const result = await pool.query(query, [password_hash, id]);
+    return result.rows[0];
+};
+
 // Count total users (for admin stats)
 export const countUsers = async () => {
     const result = await pool.query('SELECT COUNT(*) FROM users');

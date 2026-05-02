@@ -1,5 +1,5 @@
 import * as userService from '../services/userService.js';
-import { hashPassword, comparePassword, generateToken } from '../utils/helpers.js';
+import { hashPassword, comparePassword, generateToken, generateResetToken, verifyResetToken } from '../utils/helpers.js';
 
 // POST /api/auth/register
 export const registerUser = async (req, res) => {
@@ -92,6 +92,71 @@ export const getMe = async (req, res) => {
     } catch (error) {
         console.error('Error fetching profile:', error);
         res.status(500).json({ success: false, message: 'Erreur serveur.' });
+    }
+};
+
+// POST /api/auth/forgot-password
+export const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        if (!email) {
+            return res.status(400).json({ success: false, message: 'Email est requis.' });
+        }
+
+        const user = await userService.findUserByEmail(email);
+        if (!user) {
+            return res.status(200).json({
+                success: true,
+                message: 'Si cet email existe, un lien de réinitialisation a été envoyé.'
+            });
+        }
+
+        const resetToken = generateResetToken(user);
+
+        // In production, send `resetToken` by email. For now, return it so the frontend can continue the flow.
+        return res.status(200).json({
+            success: true,
+            message: 'Token de réinitialisation généré avec succès.',
+            resetToken
+        });
+    } catch (error) {
+        console.error('Error during forgot password:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur lors de la demande de réinitialisation.' });
+    }
+};
+
+// POST /api/auth/reset-password
+export const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+        if (!token || !newPassword) {
+            return res.status(400).json({ success: false, message: 'Token et nouveau mot de passe sont requis.' });
+        }
+
+        let decoded;
+        try {
+            decoded = verifyResetToken(token);
+        } catch (err) {
+            return res.status(400).json({ success: false, message: 'Token invalide ou expiré.' });
+        }
+
+        const user = await userService.findUserById(decoded.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'Utilisateur non trouvé.' });
+        }
+
+        const password_hash = await hashPassword(newPassword);
+        await userService.updateUserPassword(decoded.id, password_hash);
+
+        res.status(200).json({
+            success: true,
+            message: 'Mot de passe réinitialisé avec succès.'
+        });
+    } catch (error) {
+        console.error('Error during reset password:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur lors de la réinitialisation du mot de passe.' });
     }
 };
 
