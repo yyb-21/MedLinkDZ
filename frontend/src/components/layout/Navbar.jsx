@@ -8,7 +8,7 @@ import { assetUrl } from '../../services/api';
 import './Navbar.css';
 
 const NAV_LINKS = [
-  { to: '/', label: 'Home', icon: Home },
+  { to: '/', label: 'Accueil', icon: Home },
   { to: '/search', label: 'Rechercher', icon: Search },
   { to: '/publier', label: 'Publier', icon: PlusCircle },
 ];
