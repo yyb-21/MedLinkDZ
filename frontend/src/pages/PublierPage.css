@@ -17,7 +17,25 @@
 }
 
 .publier-header { text-align: center; margin-bottom: 2.5rem; }
-.publier-title { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.03em; }
+.publier-title { 
+  font-size: var(--fs-2xl); 
+  font-weight: 800; 
+  margin-bottom: 1rem; 
+  letter-spacing: -0.03em; 
+  position: relative;
+  display: inline-block;
+}
+.publier-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--c-green-500), var(--c-green-400));
+  border-radius: var(--r-full);
+}
 .publier-subtitle { font-size: 0.92rem; color: var(--c-text-muted); }
 
 /* ═══════════════════ STEPPER ═══════════════════ */
@@ -93,7 +111,7 @@
 }
 
 .step-title {
-  font-size: 1.25rem;
+  font-size: var(--fs-lg);
   font-weight: 700;
   margin-bottom: 1.75rem;
   letter-spacing: -0.02em;
@@ -241,7 +259,7 @@
   margin: 0 auto 1.5rem;
 }
 
-.publish-success__title { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.6rem; }
+.publish-success__title { font-size: var(--fs-xl); font-weight: 800; margin-bottom: 0.6rem; }
 .publish-success__desc { font-size: 0.9rem; color: var(--c-text-muted); margin-bottom: 2rem; }
 .publish-success__actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
 

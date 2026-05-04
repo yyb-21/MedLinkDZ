@@ -1,62 +1,125 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 
-/* Layouts */
+/* Layouts (eager — always mounted) */
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import AdminRoute from './components/layout/AdminRoute';
-import AdminLayout from './pages/admin/AdminLayout';
+import RouteFallback from './components/layout/RouteFallback';
+import ScrollToTop from './components/layout/ScrollToTop';
 
-/* Public Pages */
+/* Public pages — eager (likely landing) */
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import VerifyEmailPage from './pages/VerifyEmailPage';
-import ResendVerificationPage from './pages/ResendVerificationPage';
-import SearchPage from './pages/SearchPage';
-import AnnonceDetailPage from './pages/AnnonceDetailPage';
 
-/* Protected Pages */
-import PublierPage from './pages/PublierPage';
-import ProfilPage from './pages/ProfilPage';
+/* Public pages — lazy */
+const ForgotPasswordPage = lazy(() => import('./pages/ForgotPasswordPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
+const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
+const ResendVerificationPage = lazy(() => import('./pages/ResendVerificationPage'));
+const SearchPage = lazy(() => import('./pages/SearchPage'));
+const AnnonceDetailPage = lazy(() => import('./pages/AnnonceDetailPage'));
 
-/* Admin Pages */
-import OrdonnancesPage from './pages/admin/OrdonnancesPage';
-import ModerationPage from './pages/admin/ModerationPage';
-import StatsPage from './pages/admin/StatsPage';
+/* Protected pages — lazy (auth gate skips cold path for anon) */
+const PublierPage = lazy(() => import('./pages/PublierPage'));
+const ProfilPage = lazy(() => import('./pages/ProfilPage'));
+
+/* Admin — lazy (rarely used by most users) */
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
+const OrdonnancesPage = lazy(() => import('./pages/admin/OrdonnancesPage'));
+const ModerationPage = lazy(() => import('./pages/admin/ModerationPage'));
+const StatsPage = lazy(() => import('./pages/admin/StatsPage'));
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        {/* Public routes */}
-        <Route index element={<HomePage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="register" element={<RegisterPage />} />
-        <Route path="forgot-password" element={<ForgotPasswordPage />} />
-        <Route path="reset-password" element={<ResetPasswordPage />} />
-        <Route path="verify-email" element={<VerifyEmailPage />} />
-        <Route path="resend-verification" element={<ResendVerificationPage />} />
-        <Route path="search" element={<SearchPage />} />
-        <Route path="annonce/:id" element={<AnnonceDetailPage />} />
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
+          
+          <Route path="forgot-password" element={<Suspense fallback={<RouteFallback />}><ForgotPasswordPage /></Suspense>} />
+          <Route path="reset-password" element={<Suspense fallback={<RouteFallback />}><ResetPasswordPage /></Suspense>} />
+          <Route path="verify-email" element={<Suspense fallback={<RouteFallback />}><VerifyEmailPage /></Suspense>} />
+          <Route path="resend-verification" element={<Suspense fallback={<RouteFallback />}><ResendVerificationPage /></Suspense>} />
 
-        {/* Protected routes (Requires Auth) */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="publier" element={<PublierPage />} />
-          <Route path="profil" element={<ProfilPage />} />
-        </Route>
+          <Route
+            path="search"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <SearchPage />
+              </Suspense>
+            }
+          />
+          <Route
+            path="annonce/:id"
+            element={
+              <Suspense fallback={<RouteFallback />}>
+                <AnnonceDetailPage />
+              </Suspense>
+            }
+          />
 
-        {/* Admin routes (Requires Admin role) */}
-        <Route element={<AdminRoute />}>
-          <Route path="admin" element={<AdminLayout />}>
-            <Route index element={<OrdonnancesPage />} />
-            <Route path="moderation" element={<ModerationPage />} />
-            <Route path="stats" element={<StatsPage />} />
+          <Route element={<ProtectedRoute />}>
+            <Route
+              path="publier"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <PublierPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="profil"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <ProfilPage />
+                </Suspense>
+              }
+            />
+          </Route>
+
+          <Route element={<AdminRoute />}>
+            <Route
+              path="admin"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <AdminLayout />
+                </Suspense>
+              }
+            >
+              <Route
+                index
+                element={
+                  <Suspense fallback={<RouteFallback />}>
+                    <OrdonnancesPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="moderation"
+                element={
+                  <Suspense fallback={<RouteFallback />}>
+                    <ModerationPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="stats"
+                element={
+                  <Suspense fallback={<RouteFallback />}>
+                    <StatsPage />
+                  </Suspense>
+                }
+              />
+            </Route>
           </Route>
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
+    </>
   );
 }
 
