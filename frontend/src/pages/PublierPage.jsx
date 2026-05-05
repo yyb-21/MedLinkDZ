@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Package, FileText, MapPin, Upload, ChevronRight, ChevronLeft, Check, ImagePlus, AlertCircle } from 'lucide-react';
+import { Package, FileText, MapPin, Upload, ChevronRight, ChevronLeft, Check, ImagePlus, AlertCircle, X } from 'lucide-react';
 import Input from '../components/ui/Input';
 import WilayaSelect from '../components/ui/WilayaSelect';
 import PremiumButton from '../components/ui/PremiumButton';
 import FadeUp from '../components/animations/FadeUp';
+import { annonceApi, catalogApi } from '../services/api';
 import './PublierPage.css';
 
 const CATEGORIES = ['Antibiotiques', 'Cardiovasculaire', 'Diabète', 'Neurologie', 'Oncologie', 'Dermatologie', 'Pédiatrie', 'Ophtalmologie', 'Autre'];
@@ -17,22 +18,38 @@ const STEPS = [
   { id: 4, label: 'Confirmation', icon: Check },
 ];
 
+const BLANK_FORM = {
+  type: '',
+  name: '',
+  category: '',
+  description: '',
+  quantity: '',
+  expiryDate: '',
+  wilaya: '',
+  contact: '',
+  image: null,
+};
+
 export default function PublierPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({
-    type: '',
-    name: '',
-    category: '',
-    description: '',
-    quantity: '',
-    expiryDate: '',
-    wilaya: '',
-    contact: '',
-    image: null,
-  });
+  const [form, setForm] = useState({ ...BLANK_FORM });
+  const [imagePreview, setImagePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // Catalog data for resolving IDs
+  const [wilayas, setWilayas] = useState([]);
+  const [medicaments, setMedicaments] = useState([]);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    catalogApi.wilayas().then(r => setWilayas(r.wilayas || r)).catch(() => {});
+    catalogApi.medicaments().then(r => setMedicaments(r.medicaments || r)).catch(() => {});
+    catalogApi.categories().then(r => setCategories(r.categories || r)).catch(() => {});
+  }, []);
 
   const set = (key) => (e) => setForm({ ...form, [key]: e?.target?.value ?? e });
 
@@ -43,12 +60,52 @@ export default function PublierPage() {
     return true;
   };
 
-  const handleSubmit = () => {
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setForm(prev => ({ ...prev, image: file }));
+    const reader = new FileReader();
+    reader.onload = (ev) => setImagePreview(ev.target.result);
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    setForm(prev => ({ ...prev, image: null }));
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleSubmit = async () => {
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    setSubmitError(null);
+    try {
+      // Resolve wilaya_id
+      const wilayaObj = wilayas.find(
+        w => w.nom_fr === form.wilaya || String(w.id) === String(form.wilaya)
+      );
+      const wilaya_id = wilayaObj ? wilayaObj.id : form.wilaya;
+
+      const fd = new FormData();
+      fd.append('type', form.type === 'offre' ? 'DON' : 'DEMANDE');
+      fd.append('wilaya_id', wilaya_id);
+      
+      // Send the name as medicament_name, backend will find or create it
+      fd.append('medicament_name', form.name);
+      
+      fd.append('quantite', form.quantity || '1');
+      if (form.description) fd.append('description', form.description);
+      if (form.image) fd.append('images', form.image);
+
+      await annonceApi.create(fd);
       setSubmitted(true);
-    }, 2000);
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        'Une erreur est survenue. Veuillez réessayer.';
+      setSubmitError(msg);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -68,7 +125,7 @@ export default function PublierPage() {
                 <PremiumButton variant="primary" onClick={() => navigate('/')}>
                   Retour à l'accueil
                 </PremiumButton>
-                <PremiumButton variant="ghost" onClick={() => { setSubmitted(false); setStep(1); setForm({ type: '', name: '', category: '', description: '', quantity: '', expiryDate: '', wilaya: '', contact: '', image: null }); }}>
+                <PremiumButton variant="ghost" onClick={() => { setSubmitted(false); setStep(1); setForm({ ...BLANK_FORM }); setImagePreview(null); }}>
                   Publier une autre
                 </PremiumButton>
               </div>
@@ -180,11 +237,35 @@ export default function PublierPage() {
                     />
                   </div>
 
-                  {/* Image upload placeholder */}
-                  <div className="image-upload">
-                    <ImagePlus size={24} />
-                    <span>Ajouter une photo (optionnel)</span>
-                  </div>
+                  {imagePreview ? (
+                    <div className="image-preview-wrap">
+                      <img src={imagePreview} alt="Aperçu" className="image-preview-thumb" />
+                      <div className="image-preview-info">
+                        <span className="image-preview-name">{form.image?.name}</span>
+                        <button
+                          type="button"
+                          className="image-preview-remove"
+                          onClick={handleRemoveImage}
+                          aria-label="Supprimer la photo"
+                        >
+                          <X size={14} />
+                          Supprimer
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="image-upload" style={{ cursor: 'pointer' }}>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        style={{ display: 'none' }}
+                        onChange={handleImageChange}
+                      />
+                      <ImagePlus size={24} />
+                      <span>Ajouter une photo <span className="image-upload__optional">(optionnel)</span></span>
+                    </label>
+                  )}
                 </div>
               </motion.div>
             )}
@@ -216,7 +297,19 @@ export default function PublierPage() {
                   {form.expiryDate && <div className="recap-row"><span className="recap-label">Expiration</span><span className="recap-value">{form.expiryDate}</span></div>}
                   <div className="recap-row"><span className="recap-label">Wilaya</span><span className="recap-value">{form.wilaya}</span></div>
                   {form.contact && <div className="recap-row"><span className="recap-label">Contact</span><span className="recap-value">{form.contact}</span></div>}
+                  {imagePreview && (
+                    <div className="recap-row recap-row--image">
+                      <span className="recap-label">Photo</span>
+                      <img src={imagePreview} alt="Aperçu" className="recap-image-thumb" />
+                    </div>
+                  )}
                 </div>
+                {submitError && (
+                  <div className="submit-error">
+                    <AlertCircle size={16} />
+                    <span>{submitError}</span>
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

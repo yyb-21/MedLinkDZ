@@ -40,3 +40,21 @@ export const getAllWilayas = async () => {
     const result = await pool.query('SELECT * FROM wilayas ORDER BY id');
     return result.rows;
 };
+
+// Find a medicament by name (case-insensitive) or create a new one
+export const findOrCreateMedicament = async (name) => {
+    const trimmed = name.trim();
+    // 1. Try exact match on marque or dci
+    const found = await pool.query(
+        `SELECT * FROM medicaments WHERE LOWER(marque) = LOWER($1) OR LOWER(dci) = LOWER($1) LIMIT 1`,
+        [trimmed]
+    );
+    if (found.rows.length > 0) return found.rows[0];
+
+    // 2. Create a new entry if not found
+    const created = await pool.query(
+        `INSERT INTO medicaments (dci, marque) VALUES ($1, $1) RETURNING *`,
+        [trimmed]
+    );
+    return created.rows[0];
+};

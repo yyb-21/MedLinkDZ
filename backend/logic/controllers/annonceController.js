@@ -1,5 +1,6 @@
 import * as annonceService from '../services/annonceService.js';
 import * as mediaService from '../services/mediaService.js';
+import * as catalogService from '../services/catalogService.js';
 
 // GET /api/annonces
 export const getAnnonces = async (req, res) => {
@@ -46,10 +47,16 @@ export const getAnnonceById = async (req, res) => {
 // POST /api/annonces
 export const createAnnonce = async (req, res) => {
     try {
-        const { medicament_id, ordonnance_id, wilaya_id, type, quantite, description } = req.body;
+        let { medicament_id, medicament_name, ordonnance_id, wilaya_id, type, quantite, description } = req.body;
 
-        if (!medicament_id || !wilaya_id || !type || !quantite) {
+        if (!wilaya_id || !type || !quantite || (!medicament_id && !medicament_name)) {
             return res.status(400).json({ success: false, message: 'Champs obligatoires manquants.' });
+        }
+
+        // Handle custom medication name
+        if (!medicament_id && medicament_name) {
+            const medicament = await catalogService.findOrCreateMedicament(medicament_name);
+            medicament_id = medicament.id;
         }
 
         const annonce = await annonceService.createAnnonce({
@@ -72,7 +79,7 @@ export const createAnnonce = async (req, res) => {
 
         res.status(201).json({ success: true, message: 'Annonce créée avec succès.', annonce });
     } catch (error) {
-        console.error('Error creating annonce:', error);
+        console.error('Error creating annonce - Full stack:', error);
         res.status(500).json({ success: false, message: 'Erreur serveur lors de la création.' });
     }
 };
