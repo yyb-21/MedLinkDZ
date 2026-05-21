@@ -41,6 +41,12 @@ export const getAllWilayas = async () => {
     return result.rows;
 };
 
+// Get wilaya by id
+export const getWilayaById = async (id) => {
+    const result = await pool.query('SELECT * FROM wilayas WHERE id = $1', [id]);
+    return result.rows.length > 0 ? result.rows[0] : null;
+};
+
 // Find a medicament by name (case-insensitive) or create a new one
 export const findOrCreateMedicament = async (name) => {
     const trimmed = name.trim();

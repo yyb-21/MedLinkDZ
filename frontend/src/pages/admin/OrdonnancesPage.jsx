@@ -12,9 +12,8 @@ export default function OrdonnancesPage() {
     setLoading(true);
     try {
       const data = await adminApi.pending();
-      const list = Array.isArray(data) ? data : data?.ordonnances || data?.items || [];
-      const ordonnances = list.filter(i => i.ordonnance || i.ordonnanceUrl || i.type === 'ordonnance');
-      setItems(ordonnances.length ? ordonnances : list);
+      const list = Array.isArray(data?.ordonnances) ? data.ordonnances : [];
+      setItems(list);
     } finally {
       setLoading(false);
     }

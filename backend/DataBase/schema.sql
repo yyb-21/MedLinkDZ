@@ -39,7 +39,7 @@ CREATE TABLE medicaments (
 CREATE TABLE wilayas (
     id SERIAL PRIMARY KEY,
     nom_fr VARCHAR(255) NOT NULL,
-    nom_ar VARCHAR(255) NOT NULL,
+    nom_ar VARCHAR(255),
     region VARCHAR(100)
 );
 

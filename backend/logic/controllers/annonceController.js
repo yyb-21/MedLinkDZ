@@ -53,6 +53,21 @@ export const createAnnonce = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Champs obligatoires manquants.' });
         }
 
+        quantite = parseInt(quantite, 10);
+        if (Number.isNaN(quantite) || quantite <= 0) {
+            return res.status(400).json({ success: false, message: 'Veuillez saisir une quantité entière valide.' });
+        }
+
+        wilaya_id = parseInt(wilaya_id, 10);
+        if (Number.isNaN(wilaya_id)) {
+            return res.status(400).json({ success: false, message: 'Wilaya invalide.' });
+        }
+
+        const wilaya = await catalogService.getWilayaById(wilaya_id);
+        if (!wilaya) {
+            return res.status(400).json({ success: false, message: 'Wilaya introuvable.' });
+        }
+
         // Handle custom medication name
         if (!medicament_id && medicament_name) {
             const medicament = await catalogService.findOrCreateMedicament(medicament_name);

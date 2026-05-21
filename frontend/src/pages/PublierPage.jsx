@@ -55,7 +55,7 @@ export default function PublierPage() {
 
   const canNext = () => {
     if (step === 1) return !!form.type;
-    if (step === 2) return form.name && form.category;
+    if (step === 2) return form.name && form.category && !!form.quantity && /^\d+$/.test(form.quantity);
     if (step === 3) return !!form.wilaya;
     return true;
   };
@@ -85,6 +85,11 @@ export default function PublierPage() {
       );
       const wilaya_id = wilayaObj ? wilayaObj.id : form.wilaya;
 
+      const quantite = parseInt(form.quantity, 10);
+      if (Number.isNaN(quantite) || quantite <= 0) {
+        throw new Error('La quantité doit être un nombre entier positif.');
+      }
+
       const fd = new FormData();
       fd.append('type', form.type === 'offre' ? 'DON' : 'DEMANDE');
       fd.append('wilaya_id', wilaya_id);
@@ -92,7 +97,7 @@ export default function PublierPage() {
       // Send the name as medicament_name, backend will find or create it
       fd.append('medicament_name', form.name);
       
-      fd.append('quantite', form.quantity || '1');
+      fd.append('quantite', quantite);
       if (form.description) fd.append('description', form.description);
       if (form.image) fd.append('images', form.image);
 
@@ -222,7 +227,7 @@ export default function PublierPage() {
                   </div>
 
                   <div className="form-row">
-                    <Input label="Quantité" id="pub-qty" placeholder="Ex: 2 boîtes" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
+                    <Input label="Quantité" id="pub-qty" placeholder="Ex: 2" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
                     <Input label="Date d'expiration" id="pub-exp" type="date" value={form.expiryDate} onChange={(e) => setForm({ ...form, expiryDate: e.target.value })} />
                   </div>
 
@@ -275,7 +280,7 @@ export default function PublierPage() {
               <motion.div key="step3" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                 <h2 className="step-title">Localisation & Contact</h2>
                 <div className="step-form">
-                  <WilayaSelect value={form.wilaya} onChange={(v) => setForm({ ...form, wilaya: v })} label="Votre wilaya *" />
+                  <WilayaSelect options={wilayas} value={form.wilaya} onChange={(v) => setForm({ ...form, wilaya: v })} label="Votre wilaya *" />
                   <Input label="Moyen de contact" id="pub-contact" placeholder="Téléphone ou email" value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} />
                   <div className="location-note glass">
                     <AlertCircle size={16} />

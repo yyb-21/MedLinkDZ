@@ -10,7 +10,8 @@ export default function WilayaSelect({
   label = "Wilaya",
   placeholder = "Sélectionner une wilaya...",
   error,
-  className = ''
+  className = '',
+  options = WILAYAS,
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownDirection, setDropdownDirection] = useState('down');
@@ -41,7 +42,7 @@ export default function WilayaSelect({
     setIsOpen(!isOpen);
   };
 
-  const selectedWilaya = WILAYAS.find(w => w.id === value);
+  const selectedWilaya = options.find(w => String(w.id) === String(value));
   const displayValue = selectedWilaya ? `${selectedWilaya.id} - ${selectedWilaya.name}` : placeholder;
 
   return (
@@ -72,10 +73,10 @@ export default function WilayaSelect({
               transition={{ duration: 0.2 }}
             >
               <ul className="select-options-list custom-scrollbar">
-                {WILAYAS.map(w => (
+                {options.map(w => (
                   <li 
                     key={w.id} 
-                    className={`select-option ${value === w.id ? 'is-selected' : ''}`}
+                    className={`select-option ${String(value) === String(w.id) ? 'is-selected' : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
                       onChange(w.id);

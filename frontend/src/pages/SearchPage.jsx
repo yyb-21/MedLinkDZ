@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, SlidersHorizontal, MapPin, X, ChevronDown, Package, ArrowUpRight } from 'lucide-react';
 import AnnonceCard from '../components/annonces/AnnonceCard';
@@ -6,21 +6,10 @@ import WilayaSelect from '../components/ui/WilayaSelect';
 import PremiumButton from '../components/ui/PremiumButton';
 import FadeUp from '../components/animations/FadeUp';
 import Skeleton, { CardSkeleton } from '../components/ui/Skeleton';
+import { annonceApi, assetUrl } from '../services/api';
 import './SearchPage.css';
 
 const CATEGORIES = ['Tous', 'Antibiotiques', 'Cardiovasculaire', 'Diabète', 'Neurologie', 'Oncologie', 'Dermatologie', 'Pédiatrie', 'Ophtalmologie'];
-
-const MOCK_ANNONCES = [
-  { id: 1, type: 'offre', name: 'Doliprane 1000mg', category: 'Antibiotiques', wilaya: 'Alger', date: '2026-04-04', imageUrl: '' },
-  { id: 2, type: 'demande', name: 'Insuline NovoMix 30', category: 'Diabète', wilaya: 'Oran', date: '2026-04-03', imageUrl: '' },
-  { id: 3, type: 'offre', name: 'Amoxicilline 500mg', category: 'Antibiotiques', wilaya: 'Constantine', date: '2026-04-02', imageUrl: '' },
-  { id: 4, type: 'demande', name: 'Losartan 50mg', category: 'Cardiovasculaire', wilaya: 'Tizi Ouzou', date: '2026-04-01', imageUrl: '' },
-  { id: 5, type: 'offre', name: 'Metformine 850mg', category: 'Diabète', wilaya: 'Blida', date: '2026-03-31', imageUrl: '' },
-  { id: 6, type: 'offre', name: 'Ventoline 100µg', category: 'Pédiatrie', wilaya: 'Sétif', date: '2026-03-30', imageUrl: '' },
-  { id: 7, type: 'demande', name: 'Lévothyrox 50µg', category: 'Neurologie', wilaya: 'Annaba', date: '2026-03-29', imageUrl: '' },
-  { id: 8, type: 'offre', name: 'Augmentin 1g', category: 'Antibiotiques', wilaya: 'Béjaïa', date: '2026-03-28', imageUrl: '' },
-  { id: 9, type: 'demande', name: 'Sérum Physiologique NaCl', category: 'Pédiatrie', wilaya: 'Batna', date: '2026-03-27', imageUrl: '' },
-];
 
 export default function SearchPage() {
   const [query, setQuery] = useState('');
@@ -29,22 +18,52 @@ export default function SearchPage() {
   const [selectedWilaya, setSelectedWilaya] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [allAnnonces, setAllAnnonces] = useState([]);
+  const [error, setError] = useState(null);
 
-  // Simulate initial loading
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 800);
-    return () => clearTimeout(timer);
+  // Fetch annonces on mount
+  useEffect(() => {
+    const fetchAnnonces = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await annonceApi.list();
+        
+        if (response.success && Array.isArray(response.annonces)) {
+          const formattedAnnonces = response.annonces.map(annonce => ({
+            id: annonce.id,
+            type: annonce.type === 'DON' ? 'offre' : 'demande',
+            name: annonce.dci || annonce.marque || 'Médicament',
+            category: annonce.categorie_nom || 'Autre',
+            wilaya: annonce.wilaya_nom || 'N/A',
+            date: annonce.created_at || new Date().toISOString(),
+            imageUrl: annonce.imageUrl ? assetUrl(annonce.imageUrl) : null,
+          }));
+          setAllAnnonces(formattedAnnonces);
+        } else {
+          setAllAnnonces([]);
+        }
+      } catch (err) {
+        console.error('Error fetching annonces:', err);
+        setError('Impossible de charger les annonces');
+        setAllAnnonces([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAnnonces();
   }, []);
 
   const filtered = useMemo(() => {
-    return MOCK_ANNONCES.filter(a => {
+    return allAnnonces.filter(a => {
       const matchQuery = !query || a.name.toLowerCase().includes(query.toLowerCase());
       const matchType = selectedType === 'all' || a.type === selectedType;
       const matchCat = selectedCategory === 'Tous' || a.category === selectedCategory;
       const matchWilaya = !selectedWilaya || a.wilaya === selectedWilaya;
       return matchQuery && matchType && matchCat && matchWilaya;
     });
-  }, [query, selectedType, selectedCategory, selectedWilaya]);
+  }, [query, selectedType, selectedCategory, selectedWilaya, allAnnonces]);
 
   const activeFilterCount = [selectedType !== 'all', selectedCategory !== 'Tous', selectedWilaya].filter(Boolean).length;
 
@@ -59,7 +78,7 @@ export default function SearchPage() {
               Rechercher un <span className="gradient-text">médicament</span>
             </h1>
             <p className="search-hero__sub">
-              Parcourez {MOCK_ANNONCES.length}+ annonces vérifiées à travers les 69 wilayas.
+              Parcourez {allAnnonces.length}+ annonces vérifiées à travers les 69 wilayas.
             </p>
           </FadeUp>
 

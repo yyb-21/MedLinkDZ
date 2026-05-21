@@ -16,7 +16,7 @@ export const getStats = async (req, res) => {     //to get the stats of
 export const getPending = async (req, res) => {       // get pending annonces
     try {                                             //or pending ordonnances
         const pending = await adminService.getPendingItems();        
-        res.status(200).json({ success: true, pending });          
+        res.status(200).json({ success: true, ...pending });          
     } catch (error) {
         console.error('Error fetching pending items:', error);
         res.status(500).json({ success: false, message: 'Erreur serveur.' });

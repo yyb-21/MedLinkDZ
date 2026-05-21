@@ -1,43 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Calendar, Clock, User, Phone, ChevronLeft, Share2, Heart, AlertCircle, Package } from 'lucide-react';
+import { MapPin, Calendar, Clock, User, Phone, ChevronLeft, Share2, Heart, AlertCircle, Package, Loader } from 'lucide-react';
 import PremiumButton from '../components/ui/PremiumButton';
 import FadeUp from '../components/animations/FadeUp';
+import { annonceApi, assetUrl } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import './AnnonceDetailPage.css';
-
-const MOCK_ANNONCE = {
-  id: 1,
-  type: 'offre',
-  name: 'Doliprane 1000mg — Boîte de 8 comprimés',
-  category: 'Antibiotiques',
-  wilaya: 'Alger',
-  date: '2026-04-04',
-  description: 'Médicament non ouvert, acheté en pharmacie. Date d\'expiration en 2027. Je le donne gratuitement à toute personne qui en a besoin dans la wilaya d\'Alger ou ses environs.',
-  quantity: '2 boîtes',
-  expiryDate: '2027-06-15',
-  contact: '05 55 12 34 56',
-  author: {
-    name: 'Ahmed B.',
-    joinDate: 'Mars 2026',
-    annonces: 12,
-  },
-  imageUrl: null,
-};
 
 const PLACEHOLDER_IMG = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iODAwIiBoZWlnaHQ9IjQwMCIgZmlsbD0iIzBmMjMzOCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSIjMjU0ZjVhIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiPk3DqWRpY2FtZW50PC90ZXh0Pjwvc3ZnPg==';
 
 export default function AnnonceDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
+  
+  const [annonce, setAnnonce] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [liked, setLiked] = useState(false);
   const [showContact, setShowContact] = useState(false);
 
-  // Use a hardcoded value for now to match ProtectedRoute logic
-  const isAuthenticated = true;
+  useEffect(() => {
+    const fetchAnnonce = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await annonceApi.getById(id);
+        
+        if (response.success && response.annonce) {
+          const data = response.annonce;
+          // Transform API response to component format
+          const transformedAnnonce = {
+            id: data.id,
+            type: data.type === 'DON' ? 'offre' : 'demande',
+            name: `${data.dci || data.marque || 'Médicament'}`,
+            category: data.categorie_nom || 'Autre',
+            wilaya: data.wilaya_nom || 'N/A',
+            date: data.created_at,
+            description: data.description || 'Pas de description fournie',
+            quantity: data.quantite ? `${data.quantite} ${data.type === 'DON' ? 'unité(s)' : 'unité(s)'}` : null,
+            contact: data.user_phone || 'Non disponible',
+            author: {
+              name: `${data.user_prenom || ''} ${data.user_nom || ''}`.trim() || 'Utilisateur',
+              joinDate: data.user_joined ? new Date(data.user_joined).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : 'Date inconnue',
+              annonces: 0, // Could be fetched separately if needed
+            },
+            imageUrl: data.medias && data.medias.length > 0 ? assetUrl(data.medias[0].url) : null,
+          };
+          setAnnonce(transformedAnnonce);
+        } else {
+          setError('Annonce non trouvée');
+        }
+      } catch (err) {
+        console.error('Error fetching annonce:', err);
+        setError('Impossible de charger l\'annonce');
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  // In real app, fetch by id. Using mock data for now.
-  const annonce = MOCK_ANNONCE;
+    if (id) {
+      fetchAnnonce();
+    }
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="detail-page">
+        <div className="detail-glow" />
+        <div className="container">
+          <FadeUp>
+            <button className="detail-back" onClick={() => navigate(-1)}>
+              <ChevronLeft size={18} />
+              <span>Retour</span>
+            </button>
+          </FadeUp>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px' }}>
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}>
+              <Loader size={40} style={{ color: 'var(--c-green-500)' }} />
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !annonce) {
+    return (
+      <div className="detail-page">
+        <div className="detail-glow" />
+        <div className="container">
+          <FadeUp>
+            <button className="detail-back" onClick={() => navigate(-1)}>
+              <ChevronLeft size={18} />
+              <span>Retour</span>
+            </button>
+          </FadeUp>
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '400px', flexDirection: 'column', gap: '1rem' }}>
+            <AlertCircle size={48} style={{ color: 'var(--c-red-500)' }} />
+            <h2 style={{ color: 'var(--c-text-primary)' }}>{error || 'Annonce non trouvée'}</h2>
+            <PremiumButton variant="secondary" onClick={() => navigate('/search')}>Retour à la recherche</PremiumButton>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="detail-page">
@@ -91,15 +160,6 @@ export default function AnnonceDetailPage() {
                       </div>
                     </div>
                   )}
-                  {annonce.expiryDate && (
-                    <div className="detail-info-card glass">
-                      <Clock size={16} />
-                      <div>
-                        <span className="detail-info-card__label">Expiration</span>
-                        <span className="detail-info-card__value">{new Date(annonce.expiryDate).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}</span>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </FadeUp>
@@ -118,10 +178,6 @@ export default function AnnonceDetailPage() {
                     <h3 className="author-card__name">{annonce.author.name}</h3>
                     <p className="author-card__join">Membre depuis {annonce.author.joinDate}</p>
                   </div>
-                </div>
-                <div className="author-card__stat">
-                  <span className="author-card__stat-num">{annonce.author.annonces}</span>
-                  <span className="author-card__stat-lbl">annonces publiées</span>
                 </div>
 
                 {/* CTA - Gated Authentication */}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import AnnonceCard from '../annonces/AnnonceCard';
@@ -6,24 +6,49 @@ import PremiumButton from '../ui/PremiumButton';
 import FadeUp from '../animations/FadeUp';
 import MagnetButton from '../animations/MagnetButton';
 import { CardSkeleton } from '../ui/Skeleton';
+import { annonceApi, assetUrl } from '../../services/api';
 import './RecentAnnonces.css';
-
-const MOCK_ANNONCES = [
-  { id: '1', type: 'offre', name: 'Doliprane 1000mg × 16 comprimés', category: 'Antalgique', wilaya: 'Alger', date: '2026-04-06' },
-  { id: '2', type: 'demande', name: 'Insuline Novomix 30 FlexPen', category: 'Diabète', wilaya: 'Oran', date: '2026-04-05' },
-  { id: '3', type: 'offre', name: 'Ventoline 100mcg Spray', category: 'Asthme', wilaya: 'Constantine', date: '2026-04-05' },
-  { id: '4', type: 'demande', name: 'Bandelettes Accu-Chek Guide', category: 'Matériel médical', wilaya: 'Annaba', date: '2026-04-04' },
-  { id: '5', type: 'offre', name: 'Amoxicilline 500mg × 21 gélules', category: 'Antibiotique', wilaya: 'Blida', date: '2026-04-03' },
-  { id: '6', type: 'demande', name: 'Sérum Physiologique 250ml', category: 'Soin', wilaya: 'Tizi Ouzou', date: '2026-04-03' },
-];
 
 export default function RecentAnnonces() {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [annonces, setAnnonces] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 900);
-    return () => clearTimeout(timer);
+  useEffect(() => {
+    const fetchAnnonces = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        // Fetch only published annonces (limit to 6 for display)
+        const response = await annonceApi.list();
+        
+        if (response.success && Array.isArray(response.annonces)) {
+          // Take first 6 annonces for the home page preview
+          const recentAnnonces = response.annonces.slice(0, 6).map(annonce => ({
+            id: annonce.id,
+            type: annonce.type === 'DON' ? 'offre' : 'demande',
+            name: annonce.dci || annonce.marque || 'Médicament',
+            category: annonce.categorie_nom || 'Autre',
+            wilaya: annonce.wilaya_nom || 'N/A',
+            date: annonce.created_at || new Date().toISOString(),
+            imageUrl: annonce.imageUrl ? assetUrl(annonce.imageUrl) : null,
+            description: annonce.description,
+          }));
+          setAnnonces(recentAnnonces);
+        } else {
+          setAnnonces([]);
+        }
+      } catch (err) {
+        console.error('Error fetching annonces:', err);
+        setError('Impossible de charger les annonces');
+        setAnnonces([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAnnonces();
   }, []);
 
   return (
@@ -55,10 +80,18 @@ export default function RecentAnnonces() {
             [...Array(6)].map((_, i) => (
               <CardSkeleton key={i} />
             ))
-          ) : (
-            MOCK_ANNONCES.map((a, i) => (
+          ) : error ? (
+            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2rem', color: 'var(--c-text-secondary)' }}>
+              <p>{error}</p>
+            </div>
+          ) : annonces.length > 0 ? (
+            annonces.map((a, i) => (
               <AnnonceCard key={a.id} annonce={a} index={i} />
             ))
+          ) : (
+            <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2rem', color: 'var(--c-text-secondary)' }}>
+              <p>Aucune annonce disponible pour le moment</p>
+            </div>
           )}
         </div>
       </div>
