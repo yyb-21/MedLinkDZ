@@ -33,7 +33,7 @@ export default function ProfilPage() {
       setForm({
         nom: user.nom || '',
         prenom: user.prenom || '',
-        telephone: user.telephone || '',
+        phone: user.phone || '',       // DB column is 'phone', not 'telephone'
         wilaya: user.wilaya || ''
       });
     }
@@ -65,8 +65,8 @@ export default function ProfilPage() {
     ];
   }, [annonces]);
 
-  const joinDate = user?.createdAt
-    ? new Date(user.createdAt).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+  const joinDate = user?.created_at
+    ? new Date(user.created_at).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
     : '—';
 
   const onPickAvatar = (e) => {
@@ -110,7 +110,7 @@ export default function ProfilPage() {
     );
   }
 
-  const avatarSrc = avatarPreview || assetUrl(user.avatar);
+  const avatarSrc = avatarPreview || assetUrl(user.avatar_url); // DB column is 'avatar_url'
 
   return (
     <div className="profil-page">
@@ -170,12 +170,12 @@ export default function ProfilPage() {
                     <span className="profil-info-row__value">{user.email}</span>
                   </div>
                 </div>
-                {user.telephone && (
+                {user.phone && (
                   <div className="profil-info-row">
                     <Phone size={16} />
                     <div>
                       <span className="profil-info-row__label">Téléphone</span>
-                      <span className="profil-info-row__value">{user.telephone}</span>
+                      <span className="profil-info-row__value">{user.phone}</span>
                     </div>
                   </div>
                 )}
@@ -287,8 +287,8 @@ export default function ProfilPage() {
                     onChange={(e) => setForm({ ...form, nom: e.target.value })} />
                 </div>
 
-                <Input label="Téléphone" id="ed-tel" icon={Phone} value={form.telephone}
-                  onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
+                <Input label="Téléphone" id="ed-tel" icon={Phone} value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })} />
 
                 <WilayaSelect label="Wilaya" value={form.wilaya}
                   onChange={(v) => setForm({ ...form, wilaya: v })} />

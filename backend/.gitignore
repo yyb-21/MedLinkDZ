@@ -18,8 +18,9 @@ jspm_packages/
 .env.production
 .env.local
 
-# Uploaded Files (User generated content)
-uploads/
+# Uploaded Files (User generated content — keep folder, ignore files inside)
+uploads/*
+!uploads/.gitkeep
 
 # Optional npm cache directory
 .npm

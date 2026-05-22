@@ -40,7 +40,9 @@ export const authApi = {
   resendVerification: (data) => api.post('/api/auth/resend-verification', data).then(r => r.data),
   me: () => api.get('/api/auth/me').then(r => r.data),
   updateProfile: (formData) =>
-    api.patch('/api/auth/update-profile', formData).then(r => r.data),
+    api.patch('/api/auth/update-profile', formData, {
+      headers: { 'Content-Type': undefined }, // Let browser set multipart/form-data + boundary
+    }).then(r => r.data),
 };
 
 /* ============= ANNONCES ============= */
@@ -49,7 +51,9 @@ export const annonceApi = {
   getById: (id) => api.get(`/api/annonces/${id}`).then(r => r.data),
   myAnnonces: () => api.get('/api/annonces/user/my-annonces').then(r => r.data),
   create: (formData) =>
-    api.post('/api/annonces', formData).then(r => r.data),
+    api.post('/api/annonces', formData, {
+      headers: { 'Content-Type': undefined }, // Let browser set multipart/form-data + boundary
+    }).then(r => r.data),
   update: (id, data) => api.put(`/api/annonces/${id}`, data).then(r => r.data),
   remove: (id) => api.delete(`/api/annonces/${id}`).then(r => r.data),
 };

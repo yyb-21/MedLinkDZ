@@ -7,6 +7,7 @@ import WilayaSelect from '../components/ui/WilayaSelect';
 import PremiumButton from '../components/ui/PremiumButton';
 import FadeUp from '../components/animations/FadeUp';
 import { annonceApi, catalogApi } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import './PublierPage.css';
 
 const CATEGORIES = ['Antibiotiques', 'Cardiovasculaire', 'Diabète', 'Neurologie', 'Oncologie', 'Dermatologie', 'Pédiatrie', 'Ophtalmologie', 'Autre'];
@@ -32,6 +33,7 @@ const BLANK_FORM = {
 
 export default function PublierPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({ ...BLANK_FORM });
   const [imagePreview, setImagePreview] = useState(null);
@@ -58,6 +60,11 @@ export default function PublierPage() {
     if (step === 2) return form.name && form.category && !!form.quantity && /^\d+$/.test(form.quantity);
     if (step === 3) return !!form.wilaya;
     return true;
+  };
+
+  const getWilayaName = (id) => {
+    const w = wilayas.find(w => String(w.id) === String(id));
+    return w ? (w.nom_fr || w.name) : id;
   };
 
   const handleImageChange = (e) => {
@@ -281,10 +288,13 @@ export default function PublierPage() {
                 <h2 className="step-title">Localisation & Contact</h2>
                 <div className="step-form">
                   <WilayaSelect options={wilayas} value={form.wilaya} onChange={(v) => setForm({ ...form, wilaya: v })} label="Votre wilaya *" />
-                  <Input label="Moyen de contact" id="pub-contact" placeholder="Téléphone ou email" value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} />
                   <div className="location-note glass">
                     <AlertCircle size={16} />
                     <span>Votre localisation exacte ne sera jamais partagée. Seule la wilaya est visible.</span>
+                  </div>
+                  <div className="location-note glass" style={{ marginTop: '1rem' }}>
+                    <AlertCircle size={16} />
+                    <span>Les utilisateurs intéressés vous contacteront via le numéro de téléphone associé à votre compte.</span>
                   </div>
                 </div>
               </motion.div>
@@ -300,8 +310,8 @@ export default function PublierPage() {
                   <div className="recap-row"><span className="recap-label">Catégorie</span><span className="recap-value">{form.category}</span></div>
                   {form.quantity && <div className="recap-row"><span className="recap-label">Quantité</span><span className="recap-value">{form.quantity}</span></div>}
                   {form.expiryDate && <div className="recap-row"><span className="recap-label">Expiration</span><span className="recap-value">{form.expiryDate}</span></div>}
-                  <div className="recap-row"><span className="recap-label">Wilaya</span><span className="recap-value">{form.wilaya}</span></div>
-                  {form.contact && <div className="recap-row"><span className="recap-label">Contact</span><span className="recap-value">{form.contact}</span></div>}
+                  <div className="recap-row"><span className="recap-label">Wilaya</span><span className="recap-value">{getWilayaName(form.wilaya)}</span></div>
+                  {user?.phone && <div className="recap-row"><span className="recap-label">Contact</span><span className="recap-value">{user.phone}</span></div>}
                   {imagePreview && (
                     <div className="recap-row recap-row--image">
                       <span className="recap-label">Photo</span>

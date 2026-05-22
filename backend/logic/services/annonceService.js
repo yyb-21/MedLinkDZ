@@ -63,7 +63,23 @@ export const getAnnonces = async (filters = {}) => {
     query += ' ORDER BY a.created_at DESC';
 
     const result = await pool.query(query, params);
-    return result.rows;
+    
+    // Fetch media for each annonce
+    const annoncesWithMedia = await Promise.all(
+        result.rows.map(async (annonce) => {
+            const mediaResult = await pool.query(
+                'SELECT url, type FROM medias WHERE annonce_id = $1 ORDER BY uploaded_at',
+                [annonce.id]
+            );
+            return {
+                ...annonce,
+                medias: mediaResult.rows,
+                imageUrl: mediaResult.rows.length > 0 ? mediaResult.rows[0].url : null
+            };
+        })
+    );
+    
+    return annoncesWithMedia;
 };
 
 // Get a single annonce by ID with full details
@@ -82,7 +98,22 @@ export const getAnnonceById = async (id) => {
         WHERE a.id = $1
     `;
     const result = await pool.query(query, [id]);
-    return result.rows.length > 0 ? result.rows[0] : null;
+    
+    if (result.rows.length === 0) return null;
+    
+    const annonce = result.rows[0];
+    
+    // Fetch media for this annonce
+    const mediaResult = await pool.query(
+        'SELECT url, type FROM medias WHERE annonce_id = $1 ORDER BY uploaded_at',
+        [id]
+    );
+    
+    return {
+        ...annonce,
+        medias: mediaResult.rows,
+        imageUrl: mediaResult.rows.length > 0 ? mediaResult.rows[0].url : null
+    };
 };
 
 // Get annonces for a specific user
@@ -100,7 +131,23 @@ export const getAnnoncesByUserId = async (userId) => {
         ORDER BY a.created_at DESC
     `;
     const result = await pool.query(query, [userId]);
-    return result.rows;
+    
+    // Fetch media for each annonce
+    const annoncesWithMedia = await Promise.all(
+        result.rows.map(async (annonce) => {
+            const mediaResult = await pool.query(
+                'SELECT url, type FROM medias WHERE annonce_id = $1 ORDER BY uploaded_at',
+                [annonce.id]
+            );
+            return {
+                ...annonce,
+                medias: mediaResult.rows,
+                imageUrl: mediaResult.rows.length > 0 ? mediaResult.rows[0].url : null
+            };
+        })
+    );
+    
+    return annoncesWithMedia;
 };
 
 // Update an existing annonce

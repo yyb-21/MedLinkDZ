@@ -42,8 +42,11 @@ export default function WilayaSelect({
     setIsOpen(!isOpen);
   };
 
+  // Support both API format (nom_fr) and static format (name)
+  const getName = (w) => w.nom_fr || w.name || '';
+
   const selectedWilaya = options.find(w => String(w.id) === String(value));
-  const displayValue = selectedWilaya ? `${selectedWilaya.id} - ${selectedWilaya.name}` : placeholder;
+  const displayValue = selectedWilaya ? `${selectedWilaya.id} - ${getName(selectedWilaya)}` : placeholder;
 
   return (
     <div className={`input-group ${error ? 'has-error' : ''} ${className}`} ref={containerRef}>
@@ -84,7 +87,7 @@ export default function WilayaSelect({
                     }}
                   >
                     <span className="wi-id">{w.id} - </span>
-                    <span className="wi-name">{w.name}</span>
+                    <span className="wi-name">{getName(w)}</span>
                   </li>
                 ))}
               </ul>
