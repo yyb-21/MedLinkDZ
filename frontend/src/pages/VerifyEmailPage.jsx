@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle, AlertCircle, HeartPulse } from 'lucide-react';
+import { HeartPulse } from 'lucide-react';
+import AuthNotice from '../components/ui/AuthNotice';
 import { authApi } from '../services/api';
 import './AuthPages.css';
 
@@ -56,16 +57,8 @@ export default function VerifyEmailPage() {
 
           <div className="auth-form">
             {loading && <p>Vérification en cours...</p>}
-            {message && (
-              <div className="auth-success" role="status">
-                <CheckCircle size={16} /> {message}
-              </div>
-            )}
-            {error && (
-              <div className="auth-error" role="alert">
-                <AlertCircle size={14} /> {error}
-              </div>
-            )}
+            {message && <AuthNotice variant="success" title="Email vérifié" message={message} />}
+            {error && <AuthNotice variant="error" title="Vérification impossible" message={error} />}
 
             <div className="auth-divider"><span>ou</span></div>
             <div className="auth-footer">

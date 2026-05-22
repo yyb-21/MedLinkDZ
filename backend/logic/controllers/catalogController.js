@@ -33,3 +33,14 @@ export const getWilayas = async (req, res) => {
         res.status(500).json({ success: false, message: 'Erreur serveur.' });
     }
 };
+
+// GET /api/catalog/summary
+export const getSummary = async (req, res) => {
+    try {
+        const stats = await catalogService.getLandingStats();
+        res.status(200).json({ success: true, stats });
+    } catch (error) {
+        console.error('Error fetching landing stats:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur.' });
+    }
+};

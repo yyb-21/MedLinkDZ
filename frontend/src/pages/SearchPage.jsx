@@ -66,6 +66,7 @@ export default function SearchPage() {
   }, [query, selectedType, selectedCategory, selectedWilaya, allAnnonces]);
 
   const activeFilterCount = [selectedType !== 'all', selectedCategory !== 'Tous', selectedWilaya].filter(Boolean).length;
+  const hasPublishedAnnonces = allAnnonces.length > 0;
 
   return (
     <div className="search-page">
@@ -117,65 +118,73 @@ export default function SearchPage() {
         {showFilters && (
           <motion.section
             className="search-filters"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
           >
-            <div className="container search-filters__inner">
-              {/* Type Toggle */}
-              <div className="filter-group">
-                <label className="filter-label">Type</label>
-                <div className="type-toggle">
-                  {[{ val: 'all', lbl: 'Tous' }, { val: 'offre', lbl: '↑ Offres' }, { val: 'demande', lbl: '↓ Demandes' }].map(t => (
-                    <button
-                      key={t.val}
-                      className={`type-toggle__btn ${selectedType === t.val ? 'active' : ''}`}
-                      onClick={() => setSelectedType(t.val)}
-                    >
-                      {t.lbl}
-                    </button>
-                  ))}
+            <motion.div
+              className="search-filters__panel"
+              initial={{ height: 0 }}
+              animate={{ height: 'auto' }}
+              exit={{ height: 0 }}
+              transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            >
+              <div className="container search-filters__inner">
+                {/* Type Toggle */}
+                <div className="filter-group">
+                  <label className="filter-label">Type</label>
+                  <div className="type-toggle">
+                    {[{ val: 'all', lbl: 'Tous' }, { val: 'offre', lbl: '↑ Offres' }, { val: 'demande', lbl: '↓ Demandes' }].map(t => (
+                      <button
+                        key={t.val}
+                        className={`type-toggle__btn ${selectedType === t.val ? 'active' : ''}`}
+                        onClick={() => setSelectedType(t.val)}
+                      >
+                        {t.lbl}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Category Pills */}
-              <div className="filter-group">
-                <label className="filter-label">Catégorie</label>
-                <div className="cat-pills">
-                  {CATEGORIES.map(c => (
-                    <button
-                      key={c}
-                      className={`cat-pill ${selectedCategory === c ? 'active' : ''}`}
-                      onClick={() => setSelectedCategory(c)}
-                    >
-                      {c}
-                    </button>
-                  ))}
+                {/* Category Pills */}
+                <div className="filter-group">
+                  <label className="filter-label">Catégorie</label>
+                  <div className="cat-pills">
+                    {CATEGORIES.map(c => (
+                      <button
+                        key={c}
+                        className={`cat-pill ${selectedCategory === c ? 'active' : ''}`}
+                        onClick={() => setSelectedCategory(c)}
+                      >
+                        {c}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              {/* Wilaya */}
-              <div className="filter-group filter-group--wilaya">
-                <WilayaSelect
-                  value={selectedWilaya}
-                  onChange={setSelectedWilaya}
-                  label="Wilaya"
-                  placeholder="Toutes les wilayas"
-                />
-              </div>
+                {/* Wilaya */}
+                <div className="filter-group filter-group--wilaya">
+                  <WilayaSelect
+                    value={selectedWilaya}
+                    onChange={setSelectedWilaya}
+                    label="Wilaya"
+                    placeholder="Toutes les wilayas"
+                  />
+                </div>
 
-              {/* Clear */}
-              {activeFilterCount > 0 && (
-                <button className="clear-filters-btn" onClick={() => {
-                  setSelectedType('all');
-                  setSelectedCategory('Tous');
-                  setSelectedWilaya('');
-                }}>
-                  <X size={14} /> Réinitialiser les filtres
-                </button>
-              )}
-            </div>
+                {/* Clear */}
+                {activeFilterCount > 0 && (
+                  <button className="clear-filters-btn" onClick={() => {
+                    setSelectedType('all');
+                    setSelectedCategory('Tous');
+                    setSelectedWilaya('');
+                  }}>
+                    <X size={14} /> Réinitialiser les filtres
+                  </button>
+                )}
+              </div>
+            </motion.div>
           </motion.section>
         )}
       </AnimatePresence>
@@ -197,6 +206,26 @@ export default function SearchPage() {
                   <CardSkeleton key={i} />
                 ))}
               </div>
+            ) : error ? (
+              <FadeUp>
+                <div className="search-empty glass">
+                  <Search size={48} className="search-empty__icon" />
+                  <h3 className="search-empty__title">Impossible de charger les annonces</h3>
+                  <p className="search-empty__desc">
+                    Vérifiez votre connexion puis réessayez dans un instant.
+                  </p>
+                </div>
+              </FadeUp>
+            ) : !hasPublishedAnnonces ? (
+              <FadeUp>
+                <div className="search-empty glass">
+                  <Search size={48} className="search-empty__icon" />
+                  <h3 className="search-empty__title">Aucune annonce publiée pour le moment</h3>
+                  <p className="search-empty__desc">
+                    Dès qu’une annonce sera validée, elle apparaîtra ici.
+                  </p>
+                </div>
+              </FadeUp>
             ) : filtered.length > 0 ? (
               <div className="search-results__grid">
                 {filtered.map((a, i) => (

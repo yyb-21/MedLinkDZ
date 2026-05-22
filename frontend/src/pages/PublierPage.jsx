@@ -58,7 +58,7 @@ export default function PublierPage() {
   const canNext = () => {
     if (step === 1) return !!form.type;
     if (step === 2) return form.name && form.category && !!form.quantity && /^\d+$/.test(form.quantity);
-    if (step === 3) return !!form.wilaya;
+    if (step === 3) return !!form.wilaya && !!form.contact.trim();
     return true;
   };
 
@@ -88,7 +88,7 @@ export default function PublierPage() {
     try {
       // Resolve wilaya_id
       const wilayaObj = wilayas.find(
-        w => w.nom_fr === form.wilaya || String(w.id) === String(form.wilaya)
+        w => w.name === form.wilaya || w.nom_fr === form.wilaya || w.nom === form.wilaya || String(w.id) === String(form.wilaya)
       );
       const wilaya_id = wilayaObj ? wilayaObj.id : form.wilaya;
 
@@ -332,19 +332,19 @@ export default function PublierPage() {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="publier-nav">
+          <div className={`publier-nav ${step > 1 ? 'publier-nav--paired' : 'publier-nav--single'}`}>
             {step > 1 && (
-              <PremiumButton variant="ghost" icon={ChevronLeft} onClick={() => setStep(step - 1)}>
+              <PremiumButton className="publier-nav__btn publier-nav__btn--back" variant="ghost" icon={ChevronLeft} onClick={() => setStep(step - 1)}>
                 Précédent
               </PremiumButton>
             )}
-            <div style={{ flex: 1 }} />
+            <div className="publier-nav__spacer" />
             {step < 4 ? (
-              <PremiumButton variant="primary" iconRight={ChevronRight} onClick={() => setStep(step + 1)} disabled={!canNext()}>
+              <PremiumButton className="publier-nav__btn publier-nav__btn--next" variant="primary" iconRight={ChevronRight} onClick={() => setStep(step + 1)} disabled={!canNext()}>
                 Suivant
               </PremiumButton>
             ) : (
-              <PremiumButton variant="primary" icon={Check} loading={submitting} onClick={handleSubmit}>
+              <PremiumButton className="publier-nav__btn publier-nav__btn--next" variant="primary" icon={Check} loading={submitting} onClick={handleSubmit}>
                 Publier l'annonce
               </PremiumButton>
             )}

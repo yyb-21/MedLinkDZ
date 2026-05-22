@@ -16,6 +16,11 @@ export default function WilayaSelect({
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownDirection, setDropdownDirection] = useState('down');
   const containerRef = useRef(null);
+  const normalizedOptions = (Array.isArray(options) && options.length > 0 ? options : WILAYAS).map((w) => ({
+    ...w,
+    id: w.id,
+    name: w.name || w.nom_fr || w.nom || w.label || '',
+  }));
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -46,7 +51,7 @@ export default function WilayaSelect({
   const getName = (w) => w.nom_fr || w.name || '';
 
   const selectedWilaya = options.find(w => String(w.id) === String(value));
-  const displayValue = selectedWilaya ? `${selectedWilaya.id} - ${getName(selectedWilaya)}` : placeholder;
+  const displayValue = selectedWilaya ? `${selectedWilaya.id} - ${selectedWilaya.name}` : placeholder;
 
   return (
     <div className={`input-group ${error ? 'has-error' : ''} ${className}`} ref={containerRef}>
@@ -76,7 +81,7 @@ export default function WilayaSelect({
               transition={{ duration: 0.2 }}
             >
               <ul className="select-options-list custom-scrollbar">
-                {options.map(w => (
+                {normalizedOptions.map(w => (
                   <li 
                     key={w.id} 
                     className={`select-option ${String(value) === String(w.id) ? 'is-selected' : ''}`}

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Activity, MapPin, Pill } from 'lucide-react';
 import FadeUp from '../animations/FadeUp';
+import { catalogApi } from '../../services/api';
 import './StatsBar.css';
 
 function useCountUp(target, inView, duration = 1800) {
@@ -21,7 +22,7 @@ function useCountUp(target, inView, duration = 1800) {
   return count;
 }
 
-const STATS = [
+const DEFAULT_STATS = [
   { icon: Activity, label: 'Annonces Actives', value: 1245, suffix: '+', color: '#10b981' },
   { icon: MapPin, label: 'Wilayas Couvertes', value: 69, suffix: '', color: '#14b8a6' },
   { icon: Pill, label: 'Médicaments Disponibles', value: 340, suffix: '+', color: '#34d399' },
@@ -57,11 +58,35 @@ function StatCard({ icon: Icon, label, value, suffix, color, index }) {
 }
 
 export default function StatsBar() {
+  const [stats, setStats] = useState(DEFAULT_STATS);
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        const res = await catalogApi.summary();
+        const summary = res?.stats || res || {};
+        if (!mounted) return;
+
+        setStats([
+          { icon: Activity, label: 'Annonces Actives', value: summary.activeAnnonces ?? DEFAULT_STATS[0].value, suffix: '', color: '#10b981' },
+          { icon: MapPin, label: 'Wilayas Couvertes', value: summary.wilayas ?? DEFAULT_STATS[1].value, suffix: '', color: '#14b8a6' },
+          { icon: Pill, label: 'Médicaments Disponibles', value: summary.medicaments ?? DEFAULT_STATS[2].value, suffix: '', color: '#34d399' },
+        ]);
+      } catch {
+        if (mounted) setStats(DEFAULT_STATS);
+      }
+    })();
+
+    return () => { mounted = false; };
+  }, []);
+
   return (
     <section className="stats-section">
       <div className="container">
         <div className="stats-grid">
-          {STATS.map((s, i) => <StatCard key={i} {...s} index={i} />)}
+          {stats.map((s, i) => <StatCard key={i} {...s} index={i} />)}
         </div>
       </div>
     </section>

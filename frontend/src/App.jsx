@@ -24,6 +24,7 @@ const AnnonceDetailPage = lazy(() => import('./pages/AnnonceDetailPage'));
 /* Protected pages — lazy (auth gate skips cold path for anon) */
 const PublierPage = lazy(() => import('./pages/PublierPage'));
 const ProfilPage = lazy(() => import('./pages/ProfilPage'));
+const ProfilAnnoncesPage = lazy(() => import('./pages/ProfilAnnoncesPage'));
 
 /* Admin — lazy (rarely used by most users) */
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
@@ -76,6 +77,14 @@ function App() {
               element={
                 <Suspense fallback={<RouteFallback />}>
                   <ProfilPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="profil/annonces"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <ProfilAnnoncesPage />
                 </Suspense>
               }
             />

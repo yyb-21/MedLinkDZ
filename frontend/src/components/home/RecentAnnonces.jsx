@@ -82,7 +82,8 @@ export default function RecentAnnonces() {
             ))
           ) : error ? (
             <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2rem', color: 'var(--c-text-secondary)' }}>
-              <p>{error}</p>
+              <p>Impossible de charger les annonces pour le moment.</p>
+              <p style={{ marginTop: '0.5rem' }}>Vérifiez votre connexion puis réessayez dans un instant.</p>
             </div>
           ) : annonces.length > 0 ? (
             annonces.map((a, i) => (
@@ -90,7 +91,8 @@ export default function RecentAnnonces() {
             ))
           ) : (
             <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '2rem', color: 'var(--c-text-secondary)' }}>
-              <p>Aucune annonce disponible pour le moment</p>
+              <p>Aucune annonce publiée pour le moment</p>
+              <p style={{ marginTop: '0.5rem' }}>Les annonces validées apparaîtront ici dès qu’elles seront disponibles.</p>
             </div>
           )}
         </div>

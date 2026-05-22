@@ -3,20 +3,25 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+  touch-action: manipulation;
+}
+
+.select-wrapper.is-open {
+  z-index: 10000;
 }
 
 .select-field-display {
   width: 100%;
-  padding: 0.65rem 2.25rem 0.65rem 2.5rem;
+  min-height: 48px;
+  padding: 0.7rem 2.25rem 0.7rem 2.5rem;
   font-family: inherit;
   font-size: 0.95rem;
   color: var(--c-text-primary);
-  background: rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.03);
   border: 1px solid var(--c-border);
   border-radius: var(--r-md);
   transition: all 0.2s ease;
   user-select: none;
-  min-height: 48px;
   display: flex;
   align-items: center;
   white-space: nowrap;
@@ -31,6 +36,12 @@
 .select-wrapper:hover .select-field-display {
   border-color: rgba(16,185,129,0.3);
   background: rgba(16,185,129,0.02);
+}
+
+.select-wrapper:focus-within .select-field-display {
+  border-color: var(--c-border-glow);
+  background: rgba(16,185,129,0.04);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.12);
 }
 
 .select-wrapper.is-open .select-field-display {
@@ -66,14 +77,14 @@
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  width: max-content;
+  width: 100%;
   min-width: 100%;
-  max-width: 300px;
+  max-width: 360px;
   background: var(--c-bg-surface); /* Solid deep blue matching the theme cards */
-  border: 1px solid var(--c-green-400); /* Thin solid neon green */
-  border-radius: var(--r-md);
+  border: 1px solid rgba(16, 185, 129, 0.26); /* Thin calm green border */
+  border-radius: var(--r-lg);
   box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 15px rgba(16,185,129,0.15);
-  z-index: 1000;
+  z-index: 10001;
   overflow: hidden;
 }
 
@@ -114,7 +125,7 @@
 }
 
 .select-option.is-selected {
-  background: linear-gradient(90deg, rgba(16,185,129,0.15), transparent);
+  background: linear-gradient(90deg, rgba(16,185,129,0.18), transparent);
   color: var(--c-text-primary);
   border-left: 2px solid var(--c-green-400);
 }
@@ -132,4 +143,14 @@
 }
 .select-options-list::-webkit-scrollbar-thumb:hover {
   background: rgba(16,185,129,0.5);
+}
+
+@media (max-width: 640px) {
+  .select-dropdown {
+    max-width: none;
+  }
+
+  .select-option {
+    padding: 0.8rem 1rem;
+  }
 }

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, HeartPulse, AlertCircle } from 'lucide-react';
+import { Mail, HeartPulse } from 'lucide-react';
 import Input from '../components/ui/Input';
 import PremiumButton from '../components/ui/PremiumButton';
 import MagnetButton from '../components/animations/MagnetButton';
+import AuthNotice from '../components/ui/AuthNotice';
 import { authApi } from '../services/api';
 import './AuthPages.css';
 
@@ -65,17 +66,9 @@ export default function ResendVerificationPage() {
               required
             />
 
-            {error && (
-              <div className="auth-error" role="alert">
-                <AlertCircle size={14} /> {error}
-              </div>
-            )}
+            {error && <AuthNotice variant="error" title="Impossible d'envoyer l'email" message={error} />}
 
-            {message && (
-              <div className="auth-success" role="status">
-                {message}
-              </div>
-            )}
+            {message && <AuthNotice variant="success" title="Email envoyé" message={message} />}
 
             <MagnetButton padding={50} className="w-full">
               <PremiumButton type="submit" variant="primary" fullWidth size="lg" loading={loading}>

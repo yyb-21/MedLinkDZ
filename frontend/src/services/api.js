@@ -63,6 +63,7 @@ export const catalogApi = {
   categories: () => api.get('/api/catalog/categories').then(r => r.data),
   medicaments: (params) => api.get('/api/catalog/medicaments', { params }).then(r => r.data),
   wilayas: () => api.get('/api/catalog/wilayas').then(r => r.data),
+  summary: () => api.get('/api/catalog/summary').then(r => r.data),
 };
 
 /* ============= ORDONNANCES ============= */
