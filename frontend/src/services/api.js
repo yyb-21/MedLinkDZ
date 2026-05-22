@@ -81,6 +81,7 @@ export const ordonnanceApi = {
 export const adminApi = {
   stats: () => api.get('/api/admin/stats').then(r => r.data),
   pending: () => api.get('/api/admin/pending').then(r => r.data),
+  users: () => api.get('/api/admin/users').then(r => r.data),
   moderateAnnonce: (id, statut) =>
     api.patch(`/api/admin/moderate/${id}`, { statut }).then(r => r.data),
   moderateOrdonnance: (id, payload) =>

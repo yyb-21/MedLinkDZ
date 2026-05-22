@@ -1,5 +1,5 @@
 import express from 'express';
-import { getStats, getPending, moderateAnnonce, moderateOrdonnance } from '../controllers/adminController.js';
+import { getStats, getPending, moderateAnnonce, moderateOrdonnance, getUsersWithAnnonces } from '../controllers/adminController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { roleMiddleware } from '../middlewares/roleMiddleware.js';
 
@@ -13,5 +13,6 @@ router.get('/stats', getStats);
 router.get('/pending', getPending);
 router.patch('/moderate/:id', moderateAnnonce);
 router.patch('/ordonnance/:id', moderateOrdonnance);
+router.get('/users', getUsersWithAnnonces);
 
 export default router;

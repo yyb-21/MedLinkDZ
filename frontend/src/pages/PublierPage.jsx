@@ -203,7 +203,7 @@ export default function PublierPage() {
                   </button>
                   <button
                     className={`type-card ${form.type === 'demande' ? 'selected' : ''}`}
-                    onClick={() => setForm({ ...form, type: 'demande' })}
+                    onClick={() => setForm({ ...form, type: 'demande', expiryDate: '' })}
                   >
                     <div className="type-card__icon-wrap type-card__icon-wrap--demande">
                       <Package size={28} />
@@ -235,7 +235,9 @@ export default function PublierPage() {
 
                   <div className="form-row">
                     <Input label="Quantité" id="pub-qty" placeholder="Ex: 2" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
-                    <Input label="Date d'expiration" id="pub-exp" type="date" value={form.expiryDate} onChange={(e) => setForm({ ...form, expiryDate: e.target.value })} />
+                    {form.type === 'offre' && (
+                      <Input label="Date d'expiration" id="pub-exp" type="date" value={form.expiryDate} onChange={(e) => setForm({ ...form, expiryDate: e.target.value })} />
+                    )}
                   </div>
 
                   <div className="input-group">
@@ -309,7 +311,7 @@ export default function PublierPage() {
                   <div className="recap-row"><span className="recap-label">Médicament</span><span className="recap-value">{form.name}</span></div>
                   <div className="recap-row"><span className="recap-label">Catégorie</span><span className="recap-value">{form.category}</span></div>
                   {form.quantity && <div className="recap-row"><span className="recap-label">Quantité</span><span className="recap-value">{form.quantity}</span></div>}
-                  {form.expiryDate && <div className="recap-row"><span className="recap-label">Expiration</span><span className="recap-value">{form.expiryDate}</span></div>}
+                  {form.type === 'offre' && form.expiryDate && <div className="recap-row"><span className="recap-label">Expiration</span><span className="recap-value">{form.expiryDate}</span></div>}
                   <div className="recap-row"><span className="recap-label">Wilaya</span><span className="recap-value">{getWilayaName(form.wilaya)}</span></div>
                   {user?.phone && <div className="recap-row"><span className="recap-label">Contact</span><span className="recap-value">{user.phone}</span></div>}
                   {imagePreview && (

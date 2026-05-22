@@ -76,3 +76,14 @@ export const moderateOrdonnance = async (req, res) => {   //moderate an annonce
         res.status(500).json({ success: false, message: 'Erreur serveur.' });
     }
 };
+
+// GET /api/admin/users
+export const getUsersWithAnnonces = async (req, res) => {
+    try {
+        const users = await adminService.getUsersWithAnnonceCounts();
+        res.status(200).json({ success: true, users });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur.' });
+    }
+};

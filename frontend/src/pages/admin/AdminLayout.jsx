@@ -1,10 +1,9 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { FileCheck2, ShieldCheck, BarChart3 } from 'lucide-react';
+import { ShieldCheck, BarChart3 } from 'lucide-react';
 import './AdminLayout.css';
 
 const LINKS = [
-  { to: '/admin', end: true, label: 'Ordonnances', icon: FileCheck2 },
-  { to: '/admin/moderation', label: 'Modération', icon: ShieldCheck },
+  { to: '/admin', end: true, label: 'Modération', icon: ShieldCheck },
   { to: '/admin/stats', label: 'Statistiques', icon: BarChart3 },
 ];
 

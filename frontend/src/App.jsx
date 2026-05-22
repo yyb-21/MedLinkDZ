@@ -27,7 +27,6 @@ const ProfilPage = lazy(() => import('./pages/ProfilPage'));
 
 /* Admin — lazy (rarely used by most users) */
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
-const OrdonnancesPage = lazy(() => import('./pages/admin/OrdonnancesPage'));
 const ModerationPage = lazy(() => import('./pages/admin/ModerationPage'));
 const StatsPage = lazy(() => import('./pages/admin/StatsPage'));
 
@@ -93,14 +92,6 @@ function App() {
             >
               <Route
                 index
-                element={
-                  <Suspense fallback={<RouteFallback />}>
-                    <OrdonnancesPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="moderation"
                 element={
                   <Suspense fallback={<RouteFallback />}>
                     <ModerationPage />
