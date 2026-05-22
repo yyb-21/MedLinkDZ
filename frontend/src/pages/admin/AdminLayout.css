@@ -2,13 +2,13 @@
   display: grid;
   grid-template-columns: 240px 1fr;
   gap: 1.25rem;
-  padding: 2rem 1rem;
+  padding: 3rem 1rem 1.5rem; /* more space at top to clear navbar */
   max-width: 1280px;
   margin: 0 auto;
-  min-height: calc(100vh - 72px);
+  min-height: calc(100vh - 110px);
 }
 .admin-sidebar {
-  position: sticky; top: 90px; align-self: start;
+  position: sticky; top: 110px; align-self: start; /* increased top offset */
   padding: 1rem;
   border-radius: 18px;
   display: flex; flex-direction: column; gap: 1rem;
@@ -34,10 +34,12 @@
 }
 .admin-main { min-width: 0; }
 .admin-page-title {
-  font-size: 1.5rem; font-weight: 700; margin: 0 0 0.25rem;
+  font-size: 1.6rem; font-weight: 800; margin: 0 0 0.25rem;
+  color: #064e3b;
+  letter-spacing: -0.01em;
 }
 .admin-page-sub {
-  color: rgba(0,0,0,0.6); margin: 0 0 1.5rem; font-size: 0.9rem;
+  color: #065f46; margin: 0 0 1.25rem; font-size: 0.95rem; font-weight: 600;
 }
 
 .admin-kpi-grid {
@@ -47,9 +49,11 @@
 .admin-kpi {
   padding: 1rem 1.1rem; border-radius: 16px;
   display: flex; flex-direction: column; gap: 0.35rem;
+  align-items: center; justify-content: center; text-align: center;
+  min-height: 120px;
 }
-.admin-kpi__label { font-size: 0.78rem; color: rgba(0,0,0,0.6); }
-.admin-kpi__value { font-size: 1.65rem; font-weight: 700; color: #047857; }
+.admin-kpi__label { font-size: 0.82rem; color: rgba(0,0,0,0.65); }
+.admin-kpi__value { font-size: 1.9rem; font-weight: 800; color: #065f46; }
 
 .admin-card { padding: 1.25rem; border-radius: 18px; }
 .admin-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
