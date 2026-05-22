@@ -50,7 +50,7 @@ export default function WilayaSelect({
   // Support both API format (nom_fr) and static format (name)
   const getName = (w) => w.nom_fr || w.name || '';
 
-  const selectedWilaya = options.find(w => String(w.id) === String(value));
+  const selectedWilaya = normalizedOptions.find(w => String(w.id) === String(value));
   const displayValue = selectedWilaya ? `${selectedWilaya.id} - ${selectedWilaya.name}` : placeholder;
 
   return (

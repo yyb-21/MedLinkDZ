@@ -58,7 +58,7 @@ export default function PublierPage() {
   const canNext = () => {
     if (step === 1) return !!form.type;
     if (step === 2) return form.name && form.category && !!form.quantity && /^\d+$/.test(form.quantity);
-    if (step === 3) return !!form.wilaya && !!form.contact.trim();
+    if (step === 3) return !!form.wilaya;
     return true;
   };
 
