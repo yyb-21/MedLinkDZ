@@ -7,6 +7,7 @@ import WilayaSelect from '../components/ui/WilayaSelect';
 import PremiumButton from '../components/ui/PremiumButton';
 import FadeUp from '../components/animations/FadeUp';
 import { annonceApi, catalogApi } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import './PublierPage.css';
 
 const CATEGORIES = ['Antibiotiques', 'Cardiovasculaire', 'Diabète', 'Neurologie', 'Oncologie', 'Dermatologie', 'Pédiatrie', 'Ophtalmologie', 'Autre'];
@@ -32,6 +33,7 @@ const BLANK_FORM = {
 
 export default function PublierPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState({ ...BLANK_FORM });
   const [imagePreview, setImagePreview] = useState(null);
@@ -56,8 +58,13 @@ export default function PublierPage() {
   const canNext = () => {
     if (step === 1) return !!form.type;
     if (step === 2) return form.name && form.category && !!form.quantity && /^\d+$/.test(form.quantity);
-    if (step === 3) return !!form.wilaya;
+    if (step === 3) return !!form.wilaya && !!form.contact.trim();
     return true;
+  };
+
+  const getWilayaName = (id) => {
+    const w = wilayas.find(w => String(w.id) === String(id));
+    return w ? (w.nom_fr || w.name) : id;
   };
 
   const handleImageChange = (e) => {
@@ -81,7 +88,7 @@ export default function PublierPage() {
     try {
       // Resolve wilaya_id
       const wilayaObj = wilayas.find(
-        w => w.nom_fr === form.wilaya || String(w.id) === String(form.wilaya)
+        w => w.name === form.wilaya || w.nom_fr === form.wilaya || w.nom === form.wilaya || String(w.id) === String(form.wilaya)
       );
       const wilaya_id = wilayaObj ? wilayaObj.id : form.wilaya;
 
@@ -196,7 +203,7 @@ export default function PublierPage() {
                   </button>
                   <button
                     className={`type-card ${form.type === 'demande' ? 'selected' : ''}`}
-                    onClick={() => setForm({ ...form, type: 'demande' })}
+                    onClick={() => setForm({ ...form, type: 'demande', expiryDate: '' })}
                   >
                     <div className="type-card__icon-wrap type-card__icon-wrap--demande">
                       <Package size={28} />
@@ -228,7 +235,9 @@ export default function PublierPage() {
 
                   <div className="form-row">
                     <Input label="Quantité" id="pub-qty" placeholder="Ex: 2" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
-                    <Input label="Date d'expiration" id="pub-exp" type="date" value={form.expiryDate} onChange={(e) => setForm({ ...form, expiryDate: e.target.value })} />
+                    {form.type === 'offre' && (
+                      <Input label="Date d'expiration" id="pub-exp" type="date" value={form.expiryDate} onChange={(e) => setForm({ ...form, expiryDate: e.target.value })} />
+                    )}
                   </div>
 
                   <div className="input-group">
@@ -281,10 +290,13 @@ export default function PublierPage() {
                 <h2 className="step-title">Localisation & Contact</h2>
                 <div className="step-form">
                   <WilayaSelect options={wilayas} value={form.wilaya} onChange={(v) => setForm({ ...form, wilaya: v })} label="Votre wilaya *" />
-                  <Input label="Moyen de contact" id="pub-contact" placeholder="Téléphone ou email" value={form.contact} onChange={(e) => setForm({ ...form, contact: e.target.value })} />
                   <div className="location-note glass">
                     <AlertCircle size={16} />
                     <span>Votre localisation exacte ne sera jamais partagée. Seule la wilaya est visible.</span>
+                  </div>
+                  <div className="location-note glass" style={{ marginTop: '1rem' }}>
+                    <AlertCircle size={16} />
+                    <span>Les utilisateurs intéressés vous contacteront via le numéro de téléphone associé à votre compte.</span>
                   </div>
                 </div>
               </motion.div>
@@ -299,9 +311,9 @@ export default function PublierPage() {
                   <div className="recap-row"><span className="recap-label">Médicament</span><span className="recap-value">{form.name}</span></div>
                   <div className="recap-row"><span className="recap-label">Catégorie</span><span className="recap-value">{form.category}</span></div>
                   {form.quantity && <div className="recap-row"><span className="recap-label">Quantité</span><span className="recap-value">{form.quantity}</span></div>}
-                  {form.expiryDate && <div className="recap-row"><span className="recap-label">Expiration</span><span className="recap-value">{form.expiryDate}</span></div>}
-                  <div className="recap-row"><span className="recap-label">Wilaya</span><span className="recap-value">{form.wilaya}</span></div>
-                  {form.contact && <div className="recap-row"><span className="recap-label">Contact</span><span className="recap-value">{form.contact}</span></div>}
+                  {form.type === 'offre' && form.expiryDate && <div className="recap-row"><span className="recap-label">Expiration</span><span className="recap-value">{form.expiryDate}</span></div>}
+                  <div className="recap-row"><span className="recap-label">Wilaya</span><span className="recap-value">{getWilayaName(form.wilaya)}</span></div>
+                  {user?.phone && <div className="recap-row"><span className="recap-label">Contact</span><span className="recap-value">{user.phone}</span></div>}
                   {imagePreview && (
                     <div className="recap-row recap-row--image">
                       <span className="recap-label">Photo</span>
@@ -320,19 +332,19 @@ export default function PublierPage() {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="publier-nav">
+          <div className={`publier-nav ${step > 1 ? 'publier-nav--paired' : 'publier-nav--single'}`}>
             {step > 1 && (
-              <PremiumButton variant="ghost" icon={ChevronLeft} onClick={() => setStep(step - 1)}>
+              <PremiumButton className="publier-nav__btn publier-nav__btn--back" variant="ghost" icon={ChevronLeft} onClick={() => setStep(step - 1)}>
                 Précédent
               </PremiumButton>
             )}
-            <div style={{ flex: 1 }} />
+            <div className="publier-nav__spacer" />
             {step < 4 ? (
-              <PremiumButton variant="primary" iconRight={ChevronRight} onClick={() => setStep(step + 1)} disabled={!canNext()}>
+              <PremiumButton className="publier-nav__btn publier-nav__btn--next" variant="primary" iconRight={ChevronRight} onClick={() => setStep(step + 1)} disabled={!canNext()}>
                 Suivant
               </PremiumButton>
             ) : (
-              <PremiumButton variant="primary" icon={Check} loading={submitting} onClick={handleSubmit}>
+              <PremiumButton className="publier-nav__btn publier-nav__btn--next" variant="primary" icon={Check} loading={submitting} onClick={handleSubmit}>
                 Publier l'annonce
               </PremiumButton>
             )}

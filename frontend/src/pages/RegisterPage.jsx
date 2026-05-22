@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, User, Phone, HeartPulse, AlertCircle } from 'lucide-react';
+import { Mail, Lock, User, Phone, HeartPulse } from 'lucide-react';
 import Input from '../components/ui/Input';
 import PremiumButton from '../components/ui/PremiumButton';
 import WilayaSelect from '../components/ui/WilayaSelect';
 import MagnetButton from '../components/animations/MagnetButton';
+import AuthNotice from '../components/ui/AuthNotice';
 import { useAuth } from '../context/AuthContext';
 import './AuthPages.css';
 
@@ -80,8 +81,12 @@ export default function RegisterPage() {
             <Input label="Mot de passe" type="password" id="reg-pass" icon={Lock} placeholder="Min. 8 caractères" minLength={8} required value={form.password} onChange={set('password')} />
 
             {error && (
-              <div className="auth-error" role="alert">
-                <AlertCircle size={14} /> {error}
+              <div className="auth-form__feedback auth-feedback">
+                <AuthNotice
+                  variant="error"
+                  title="Inscription impossible"
+                  message={error}
+                />
               </div>
             )}
 
@@ -91,13 +96,15 @@ export default function RegisterPage() {
             </div>
 
             {success && (
-              <div className="auth-success auth-success--wide" role="status">
-                <strong>Vérification nécessaire</strong>
-                <p>{success}</p>
-                <div className="auth-note" style={{ marginTop: '0.75rem' }}>
-                  Si vous ne trouvez pas l'email, renvoyez-le ici :{' '}
-                  <Link to="/resend-verification" className="auth-footer__link">Renvoyer l'email de vérification</Link>
-                </div>
+              <div className="auth-form__feedback auth-feedback">
+                <AuthNotice
+                  variant="success"
+                  className="auth-success--wide"
+                  title="Vérification nécessaire"
+                  message={success}
+                  actionLabel="Renvoyer l'email de vérification"
+                  actionTo="/resend-verification"
+                />
               </div>
             )}
 

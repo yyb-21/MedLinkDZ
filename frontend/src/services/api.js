@@ -40,7 +40,9 @@ export const authApi = {
   resendVerification: (data) => api.post('/api/auth/resend-verification', data).then(r => r.data),
   me: () => api.get('/api/auth/me').then(r => r.data),
   updateProfile: (formData) =>
-    api.patch('/api/auth/update-profile', formData).then(r => r.data),
+    api.patch('/api/auth/update-profile', formData, {
+      headers: { 'Content-Type': undefined }, // Let browser set multipart/form-data + boundary
+    }).then(r => r.data),
 };
 
 /* ============= ANNONCES ============= */
@@ -49,7 +51,9 @@ export const annonceApi = {
   getById: (id) => api.get(`/api/annonces/${id}`).then(r => r.data),
   myAnnonces: () => api.get('/api/annonces/user/my-annonces').then(r => r.data),
   create: (formData) =>
-    api.post('/api/annonces', formData).then(r => r.data),
+    api.post('/api/annonces', formData, {
+      headers: { 'Content-Type': undefined }, // Let browser set multipart/form-data + boundary
+    }).then(r => r.data),
   update: (id, data) => api.put(`/api/annonces/${id}`, data).then(r => r.data),
   remove: (id) => api.delete(`/api/annonces/${id}`).then(r => r.data),
 };
@@ -59,6 +63,7 @@ export const catalogApi = {
   categories: () => api.get('/api/catalog/categories').then(r => r.data),
   medicaments: (params) => api.get('/api/catalog/medicaments', { params }).then(r => r.data),
   wilayas: () => api.get('/api/catalog/wilayas').then(r => r.data),
+  summary: () => api.get('/api/catalog/summary').then(r => r.data),
 };
 
 /* ============= ORDONNANCES ============= */
@@ -77,6 +82,7 @@ export const ordonnanceApi = {
 export const adminApi = {
   stats: () => api.get('/api/admin/stats').then(r => r.data),
   pending: () => api.get('/api/admin/pending').then(r => r.data),
+  users: () => api.get('/api/admin/users').then(r => r.data),
   moderateAnnonce: (id, statut) =>
     api.patch(`/api/admin/moderate/${id}`, { statut }).then(r => r.data),
   moderateOrdonnance: (id, payload) =>

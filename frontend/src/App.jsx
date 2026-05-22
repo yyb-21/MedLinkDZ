@@ -24,10 +24,10 @@ const AnnonceDetailPage = lazy(() => import('./pages/AnnonceDetailPage'));
 /* Protected pages — lazy (auth gate skips cold path for anon) */
 const PublierPage = lazy(() => import('./pages/PublierPage'));
 const ProfilPage = lazy(() => import('./pages/ProfilPage'));
+const ProfilAnnoncesPage = lazy(() => import('./pages/ProfilAnnoncesPage'));
 
 /* Admin — lazy (rarely used by most users) */
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
-const OrdonnancesPage = lazy(() => import('./pages/admin/OrdonnancesPage'));
 const ModerationPage = lazy(() => import('./pages/admin/ModerationPage'));
 const StatsPage = lazy(() => import('./pages/admin/StatsPage'));
 
@@ -80,6 +80,14 @@ function App() {
                 </Suspense>
               }
             />
+            <Route
+              path="profil/annonces"
+              element={
+                <Suspense fallback={<RouteFallback />}>
+                  <ProfilAnnoncesPage />
+                </Suspense>
+              }
+            />
           </Route>
 
           <Route element={<AdminRoute />}>
@@ -93,14 +101,6 @@ function App() {
             >
               <Route
                 index
-                element={
-                  <Suspense fallback={<RouteFallback />}>
-                    <OrdonnancesPage />
-                  </Suspense>
-                }
-              />
-              <Route
-                path="moderation"
                 element={
                   <Suspense fallback={<RouteFallback />}>
                     <ModerationPage />

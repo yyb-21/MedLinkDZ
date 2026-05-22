@@ -1,18 +1,27 @@
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Ensure the uploads directory exists (auto-create on server start)
+const uploadsDir = path.join(__dirname, '../../uploads');
+fs.mkdirSync(uploadsDir, { recursive: true });
+
 // Store uploaded files in Backend/uploads/
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, '../../uploads'));
+        cb(null, uploadsDir);
     },
     filename: (req, file, cb) => {
-        // Create unique filename: timestamp-originalname
-        const uniqueName = Date.now() + '-' + file.originalname;
+        // Sanitize: remove spaces/special chars, keep extension
+        const ext = path.extname(file.originalname);
+        const base = path.basename(file.originalname, ext)
+            .replace(/\s+/g, '_')
+            .replace(/[^a-zA-Z0-9_.-]/g, '');
+        const uniqueName = `${Date.now()}-${base}${ext}`;
         cb(null, uniqueName);
     }
 });

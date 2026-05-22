@@ -1,0 +1,136 @@
+.profil-annonces-page {
+  padding-bottom: 5rem;
+}
+
+.profil-annonces-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.4rem 1.5rem;
+  border-radius: var(--r-xl);
+  margin-bottom: 1rem;
+}
+
+.profil-annonces-header__left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.profil-annonces-header__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-green-400);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  flex-shrink: 0;
+}
+
+.profil-kicker {
+  display: inline-flex;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-green-400);
+  margin-bottom: 0.25rem;
+}
+
+.profil-page-title {
+  margin: 0;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.profil-page-subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--c-text-muted);
+  max-width: 52rem;
+}
+
+.profil-annonces-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.profil-annonces-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.15rem;
+  border-radius: var(--r-lg);
+  margin-bottom: 1.25rem;
+}
+
+.profil-annonces-summary__value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--c-green-400);
+  line-height: 1;
+}
+
+.profil-annonces-summary__label {
+  color: var(--c-text-muted);
+  font-size: 0.88rem;
+}
+
+.profil-annonces-content {
+  min-height: 240px;
+}
+
+.profil-annonces-empty {
+  max-width: 520px;
+  margin: 1.5rem auto 0;
+}
+
+@media (max-width: 768px) {
+  .profil-annonces-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.15rem;
+  }
+
+  .profil-annonces-header__actions {
+    width: 100%;
+  }
+
+  .profil-annonces-header__actions > * {
+    flex: 1 1 0;
+  }
+
+  .profil-annonces-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .profil-annonces-header__left {
+    align-items: flex-start;
+  }
+
+  .profil-annonces-header__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+  }
+
+  .profil-annonces-header__actions {
+    flex-direction: column;
+  }
+
+  .profil-annonces-header__actions > * {
+    width: 100%;
+  }
+}

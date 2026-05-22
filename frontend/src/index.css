@@ -35,7 +35,10 @@
                radial-gradient(ellipse 50% 50% at 80% 50%, rgba(20,184,166,0.1) 0%, transparent 50%),
                linear-gradient(180deg, #050b12 0%, #091520 100%);
   --grad-green: linear-gradient(135deg, #10b981, #14b8a6);
+  --grad-navbar: linear-gradient(180deg, rgba(18, 39, 61, 0.9), rgba(8, 20, 34, 0.92)),
+                 rgba(15, 35, 56, 0.82);
   --grad-card: linear-gradient(135deg, rgba(15,35,56,0.8) 0%, rgba(9,21,32,0.9) 100%);
+  --grad-app-card: var(--grad-navbar);
   --grad-glow: radial-gradient(circle at center, rgba(16,185,129,0.15) 0%, transparent 70%);
 
   /* Shadows & Glows */
@@ -65,6 +68,13 @@
   --z-card: 10;
   --z-nav: 100;
   --z-modal: 200;
+
+  /* Typography scale */
+  --fs-sm: clamp(0.82rem, 0.7vw, 0.9rem);
+  --fs-base: clamp(0.95rem, 0.9vw, 1rem);
+  --fs-lg: clamp(1.25rem, 3vw, 1.55rem);
+  --fs-xl: clamp(1.5rem, 3.5vw, 1.9rem);
+  --fs-2xl: clamp(2rem, 5vw, 3rem);
 }
 
 /* === BASE RESET === */
@@ -74,11 +84,17 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--c-bg-base);
+  color-scheme: dark;
+  background:
+    radial-gradient(circle at top, rgba(16, 185, 129, 0.08), transparent 28%),
+    radial-gradient(circle at 85% 0%, rgba(20, 184, 166, 0.06), transparent 24%),
+    var(--c-bg-base);
   color: var(--c-text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -92,6 +108,15 @@ h1, h2, h3, h4, h5, h6 {
 p { color: var(--c-text-secondary); }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; }
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid rgba(52, 211, 153, 0.9);
+  outline-offset: 2px;
+}
 img { max-width: 100%; display: block; }
 
 /* === LAYOUT === */
@@ -117,6 +142,28 @@ img { max-width: 100%; display: block; }
   border: 1px solid rgba(16,185,129,0.15);
 }
 
+/* Non-landing app cards share one richer gradient surface. Landing-page cards keep their local styles. */
+.auth-page .glass-bright,
+.search-page .glass-bright,
+.publier-page .glass-bright,
+.profil-page .glass-bright,
+.detail-page .glass-bright,
+.admin-shell .glass-bright,
+.auth-page .glass,
+.search-page .glass,
+.publier-page .glass,
+.profil-page .glass,
+.detail-page .glass,
+.search-page .acard {
+  background: var(--grad-app-card);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow:
+    0 18px 46px rgba(0, 0, 0, 0.46),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  backdrop-filter: blur(22px) saturate(1.25);
+  -webkit-backdrop-filter: blur(22px) saturate(1.25);
+}
+
 /* === GREEN GRADIENT TEXT === */
 .gradient-text {
   background: var(--grad-green);
@@ -132,10 +179,11 @@ img { max-width: 100%; display: block; }
 }
 
 /* === SCROLLBAR === */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--c-bg-base); }
-::-webkit-scrollbar-thumb { background: var(--c-bg-card); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--c-green-900); }
+::-webkit-scrollbar { display: none; }
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 
 /* === SELECTION === */
 ::selection { background: rgba(16,185,129,0.25); color: var(--c-text-primary); }

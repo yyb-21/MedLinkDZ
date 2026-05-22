@@ -253,13 +253,16 @@ export const resendVerification = async (req, res) => {
 // PATCH /api/auth/update-profile
 export const updateProfile = async (req, res) => {
     try {
-        const {nom,prenom,phone} = req.body;
+        const { nom, prenom, phone } = req.body;
 
         // If a file was uploaded (avatar), use its path
         const avatar_url = req.file ? `/uploads/${req.file.filename}` : undefined;
 
         const updatedUser = await userService.updateUser(req.user.id, {
-            nom, prenom, phone, avatar_url
+            nom: nom || undefined,
+            prenom: prenom || undefined,
+            phone: phone || undefined,
+            avatar_url
         });
 
         if (!updatedUser) {

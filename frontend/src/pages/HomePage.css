@@ -1,9 +1,10 @@
 .home-page {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
 .home-content {
-  background-color: var(--color-bg-body);
+  background: var(--c-bg-base);
   flex: 1;
 }

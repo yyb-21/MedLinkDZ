@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
-  User, Mail, Phone, MapPin, Calendar, Package, Settings, LogOut,
+  User, Mail, Phone, MapPin, Calendar, Package, LogOut,
   Edit3, Shield, Camera, X, Loader2,
 } from 'lucide-react';
 import PremiumButton from '../components/ui/PremiumButton';
@@ -16,7 +16,6 @@ import './ProfilPage.css';
 export default function ProfilPage() {
   const { user, loading: authLoading, updateProfile, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('annonces');
   const [annonces, setAnnonces] = useState([]);
   const [loadingAnnonces, setLoadingAnnonces] = useState(true);
 
@@ -33,7 +32,7 @@ export default function ProfilPage() {
       setForm({
         nom: user.nom || '',
         prenom: user.prenom || '',
-        telephone: user.telephone || '',
+        phone: user.phone || '',       // DB column is 'phone', not 'telephone'
         wilaya: user.wilaya || ''
       });
     }
@@ -65,8 +64,8 @@ export default function ProfilPage() {
     ];
   }, [annonces]);
 
-  const joinDate = user?.createdAt
-    ? new Date(user.createdAt).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+  const joinDate = user?.created_at
+    ? new Date(user.created_at).toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
     : '—';
 
   const onPickAvatar = (e) => {
@@ -110,7 +109,13 @@ export default function ProfilPage() {
     );
   }
 
+<<<<<<< HEAD
+  const avatarSrc = avatarPreview || assetUrl(user.avatar_url); // DB column is 'avatar_url'
+=======
   const avatarSrc = avatarPreview || assetUrl(user.avatar);
+  const isVerified = !!user.is_verified;
+  const roleLabel = user.role === 'ADMIN' ? 'Administrateur' : 'Utilisateur';
+>>>>>>> 5942875 (feat: UI/UX improvements - responsive fixes, modern bottom nav, favicon, heading scale)
 
   return (
     <div className="profil-page">
@@ -128,11 +133,19 @@ export default function ProfilPage() {
                   {user.wilaya && <span><MapPin size={13} /> {user.wilaya}</span>}
                   <span><Calendar size={13} /> Membre depuis {joinDate}</span>
                 </div>
+                <div className="profil-chips">
+                  <span className="profil-chip profil-chip--role">
+                    <Shield size={12} /> {roleLabel}
+                  </span>
+                  <span className={`profil-chip ${isVerified ? 'profil-chip--verified' : 'profil-chip--pending'}`}>
+                    {isVerified ? 'Compte vérifié' : 'Compte à vérifier'}
+                  </span>
+                </div>
               </div>
             </div>
             <div className="profil-hero__right">
-              <PremiumButton variant="ghost" icon={Edit3} size="sm" onClick={() => setEditOpen(true)}>
-                Modifier
+              <PremiumButton variant="primary" icon={Edit3} size="sm" onClick={() => setEditOpen(true)}>
+                Modifier le profil
               </PremiumButton>
               {user.role === 'ADMIN' && (
                 <PremiumButton variant="ghost" icon={Shield} size="sm" onClick={() => navigate('/admin')}>
@@ -161,7 +174,10 @@ export default function ProfilPage() {
         <div className="profil-grid">
           <FadeUp delay={0.15}>
             <div className="profil-info-card glass-bright">
-              <h3 className="profil-card-title">Informations personnelles</h3>
+              <div className="profil-card-head">
+                <h3 className="profil-card-title">Informations personnelles</h3>
+                <p className="profil-card-subtitle">Vos coordonnées visibles et modifiables en un seul endroit.</p>
+              </div>
               <div className="profil-info-rows">
                 <div className="profil-info-row">
                   <Mail size={16} />
@@ -170,12 +186,12 @@ export default function ProfilPage() {
                     <span className="profil-info-row__value">{user.email}</span>
                   </div>
                 </div>
-                {user.telephone && (
+                {user.phone && (
                   <div className="profil-info-row">
                     <Phone size={16} />
                     <div>
                       <span className="profil-info-row__label">Téléphone</span>
-                      <span className="profil-info-row__value">{user.telephone}</span>
+                      <span className="profil-info-row__value">{user.phone}</span>
                     </div>
                   </div>
                 )}
@@ -190,6 +206,12 @@ export default function ProfilPage() {
                 )}
               </div>
 
+              <div className="profil-info-card__actions">
+                <PremiumButton variant="ghost" icon={Edit3} size="sm" onClick={() => setEditOpen(true)}>
+                  Modifier les informations
+                </PremiumButton>
+              </div>
+
               <button className="logout-btn" onClick={handleLogout}>
                 <LogOut size={16} />
                 Se déconnecter
@@ -199,52 +221,29 @@ export default function ProfilPage() {
 
           <FadeUp delay={0.2}>
             <div className="profil-annonces-card glass-bright">
-              <div className="profil-tabs">
-                <button className={`profil-tab ${activeTab === 'annonces' ? 'active' : ''}`} onClick={() => setActiveTab('annonces')}>
-                  Mes annonces
-                </button>
+              <div className="profil-card-head profil-card-head--space-between">
+                <div>
+                  <h3 className="profil-card-title">Mes annonces</h3>
+                  <p className="profil-card-subtitle">Ouvrez l’espace dédié pour voir tout l’historique des annonces.</p>
+                </div>
+                <span className="profil-count-pill">{annonces.length}</span>
               </div>
 
-              {loadingAnnonces ? (
-                <div className="profil-empty"><Loader2 size={24} className="profil-spin" /></div>
-              ) : annonces.length === 0 ? (
-                <div className="profil-empty">
-                  <Package size={32} />
-                  <p>Aucune annonce pour le moment</p>
+              <div className="profil-annonces-preview">
+                <div className="profil-annonces-preview__icon">
+                  <Package size={20} />
                 </div>
-              ) : (
-                <div className="profil-annonce-list">
-                  {annonces.map((a, i) => {
-                    const status = (a.status || a.statut || '').toLowerCase();
-                    const type = (a.type || '').toLowerCase();
-                    const date = a.createdAt || a.date;
-                    return (
-                      <motion.div
-                        key={a.id}
-                        className="profil-annonce-item"
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: i * 0.05 }}
-                      >
-                        <div className="profil-annonce-item__left">
-                          <span className={`pm-badge pm-badge--${type === 'offre' ? 'offre' : 'demande'}`}>
-                            {type === 'offre' ? '↑' : '↓'}
-                          </span>
-                          <div>
-                            <span className="profil-annonce-item__name">{a.medicamentNom || a.name || a.titre}</span>
-                            <span className="profil-annonce-item__date">
-                              {date ? new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) : ''}
-                            </span>
-                          </div>
-                        </div>
-                        <span className={`status-badge status-badge--${status === 'active' ? 'active' : 'closed'}`}>
-                          {status === 'active' ? 'Active' : 'Terminée'}
-                        </span>
-                      </motion.div>
-                    );
-                  })}
+                <div className="profil-annonces-preview__content">
+                  <strong>{annonces.length} annonce{annonces.length > 1 ? 's' : ''}</strong>
+                  <span>Accédez au tableau de suivi complet dans une page dédiée.</span>
                 </div>
-              )}
+              </div>
+
+              <div className="profil-annonces-card__actions">
+                <PremiumButton variant="primary" icon={Package} size="sm" onClick={() => navigate('/profil/annonces')}>
+                  Ouvrir mes annonces
+                </PremiumButton>
+              </div>
             </div>
           </FadeUp>
         </div>
@@ -270,6 +269,17 @@ export default function ProfilPage() {
               <h3 className="profil-modal__title">Modifier mon profil</h3>
 
               <form onSubmit={handleSave} className="profil-edit-form">
+                <div className="profil-edit-preview glass">
+                  <div className="profil-edit-preview__avatar">
+                    {avatarSrc ? <img src={avatarSrc} alt="avatar" /> : <User size={28} />}
+                  </div>
+                  <div className="profil-edit-preview__text">
+                    <strong>{user.prenom} {user.nom}</strong>
+                    <span>{user.email}</span>
+                    {user.wilaya && <span>{user.wilaya}</span>}
+                  </div>
+                </div>
+
                 <div className="profil-avatar-edit">
                   <div className="profil-avatar profil-avatar--lg">
                     {avatarSrc ? <img src={avatarSrc} alt="avatar" /> : <User size={40} />}
@@ -287,8 +297,8 @@ export default function ProfilPage() {
                     onChange={(e) => setForm({ ...form, nom: e.target.value })} />
                 </div>
 
-                <Input label="Téléphone" id="ed-tel" icon={Phone} value={form.telephone}
-                  onChange={(e) => setForm({ ...form, telephone: e.target.value })} />
+                <Input label="Téléphone" id="ed-tel" icon={Phone} value={form.phone}
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })} />
 
                 <WilayaSelect label="Wilaya" value={form.wilaya}
                   onChange={(v) => setForm({ ...form, wilaya: v })} />

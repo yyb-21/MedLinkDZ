@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, HeartPulse, AlertCircle } from 'lucide-react';
+import { Lock, HeartPulse } from 'lucide-react';
 import Input from '../components/ui/Input';
 import PremiumButton from '../components/ui/PremiumButton';
 import MagnetButton from '../components/animations/MagnetButton';
+import AuthNotice from '../components/ui/AuthNotice';
 import { authApi } from '../services/api';
 import './AuthPages.css';
 
@@ -82,17 +83,9 @@ export default function ResetPasswordPage() {
               required
             />
 
-            {error && (
-              <div className="auth-error" role="alert">
-                <AlertCircle size={14} /> {error}
-              </div>
-            )}
+            {error && <AuthNotice variant="error" title="Réinitialisation impossible" message={error} />}
 
-            {message && (
-              <div className="auth-success" role="status">
-                {message}
-              </div>
-            )}
+            {message && <AuthNotice variant="success" title="Mot de passe mis à jour" message={message} />}
 
             <MagnetButton padding={50} className="w-full">
               <PremiumButton type="submit" variant="primary" fullWidth size="lg" loading={loading}>

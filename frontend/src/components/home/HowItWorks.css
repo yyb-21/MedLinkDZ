@@ -31,6 +31,7 @@
   position: relative;
   border-radius: var(--r-xl);
   padding: 2.25rem 1.75rem;
+  background: var(--grad-navbar);
   transition: transform 0.3s ease;
   overflow: hidden;
   height: 100%;

@@ -18,6 +18,7 @@
   align-items: center;
   gap: 1.25rem;
   overflow: hidden;
+  background: var(--grad-navbar);
   transition: transform 0.3s var(--ease-smooth);
 }
 

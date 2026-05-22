@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, HeartPulse, AlertCircle } from 'lucide-react';
+import { Mail, Lock, HeartPulse } from 'lucide-react';
 import Input from '../components/ui/Input';
 import PremiumButton from '../components/ui/PremiumButton';
 import MagnetButton from '../components/animations/MagnetButton';
+import AuthNotice from '../components/ui/AuthNotice';
 import { useAuth } from '../context/AuthContext';
 import './AuthPages.css';
 
@@ -67,22 +68,30 @@ export default function LoginPage() {
               placeholder="••••••••" value={password}
               onChange={(e) => setPassword(e.target.value)} required />
 
-            {error && (
-              <div className="auth-error" role="alert">
-                <AlertCircle size={14} /> {error}
-              </div>
-            )}
+            {(error || showVerifyNotice) && (
+              <div className="auth-form__feedback auth-feedback">
+                {error && (
+                  <AuthNotice
+                    variant="error"
+                    title="Connexion impossible"
+                    message={error}
+                  />
+                )}
 
-            {showVerifyNotice && (
-              <div className="auth-note" role="status">
-                <AlertCircle size={14} /> Votre email n'est pas vérifié.{' '}
-                <Link to="/resend-verification" className="auth-footer__link">Renvoyer l'email de vérification</Link>
+                {showVerifyNotice && (
+                  <AuthNotice
+                    variant="info"
+                    title="Compte à vérifier"
+                    message="Votre email n'est pas encore vérifié. Renvoyez le message pour activer votre accès."
+                    actionLabel="Renvoyer l'email de vérification"
+                    actionTo="/resend-verification"
+                  />
+                )}
               </div>
             )}
 
             <div className="auth-forgot">
               <Link to="/forgot-password" className="forgot-link">Mot de passe oublié ?</Link>
-              <Link to="/resend-verification" className="forgot-link">Renvoyer l'email de vérification</Link>
             </div>
 
             <MagnetButton padding={50} className="w-full">

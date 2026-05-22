@@ -57,3 +57,17 @@ export const moderateAnnonce = async (annonceId, moderatorId, statut) => {
     const result = await pool.query(query, [moderatorId, statut, annonceId]);
     return result.rows[0];
 };
+
+// Get all users with their annonce counts
+export const getUsersWithAnnonceCounts = async () => {
+    const query = `
+        SELECT u.id, u.nom, u.prenom, u.email, u.phone, u.role, u.is_verified, u.created_at,
+               COUNT(a.id)::int AS annonce_count
+        FROM users u
+        LEFT JOIN annonces a ON a.user_id = u.id
+        GROUP BY u.id
+        ORDER BY annonce_count DESC, u.created_at DESC
+    `;
+    const result = await pool.query(query);
+    return result.rows;
+};

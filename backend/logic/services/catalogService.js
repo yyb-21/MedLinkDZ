@@ -1,4 +1,5 @@
 import pool from '../config/db.js';
+import * as annonceService from './annonceService.js';
 
 // Get all categories
 export const getAllCategories = async () => {
@@ -39,6 +40,32 @@ export const getMedicaments = async (filters = {}) => {
 export const getAllWilayas = async () => {
     const result = await pool.query('SELECT * FROM wilayas ORDER BY id');
     return result.rows;
+};
+
+// Count all wilayas
+export const countWilayas = async () => {
+    const result = await pool.query('SELECT COUNT(*) FROM wilayas');
+    return parseInt(result.rows[0].count, 10);
+};
+
+// Count all medicaments
+export const countMedicaments = async () => {
+    const result = await pool.query('SELECT COUNT(*) FROM medicaments');
+    return parseInt(result.rows[0].count, 10);
+};
+
+// Public landing-page stats
+export const getLandingStats = async () => {
+    const [activeAnnonces, medicaments] = await Promise.all([
+        annonceService.countAnnoncesByStatut('PUBLIEE'),
+        countMedicaments(),
+    ]);
+
+    return {
+        activeAnnonces,
+        wilayas: 69,
+        medicaments,
+    };
 };
 
 // Get wilaya by id

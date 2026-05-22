@@ -25,7 +25,9 @@ export default function StepDetails({ form, setForm }) {
 
         <div className="form-row">
           <Input label="Quantité" id="pub-qty" placeholder="Ex: 2 boîtes" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} />
-          <Input label="Date d'expiration" id="pub-exp" type="date" value={form.expiryDate} onChange={(e) => setForm({ ...form, expiryDate: e.target.value })} />
+          {form.type === 'offre' && (
+            <Input label="Date d'expiration" id="pub-exp" type="date" value={form.expiryDate} onChange={(e) => setForm({ ...form, expiryDate: e.target.value })} />
+          )}
         </div>
 
         <div className="input-group">
