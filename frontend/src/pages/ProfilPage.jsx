@@ -109,13 +109,9 @@ export default function ProfilPage() {
     );
   }
 
-<<<<<<< HEAD
   const avatarSrc = avatarPreview || assetUrl(user.avatar_url); // DB column is 'avatar_url'
-=======
-  const avatarSrc = avatarPreview || assetUrl(user.avatar);
   const isVerified = !!user.is_verified;
   const roleLabel = user.role === 'ADMIN' ? 'Administrateur' : 'Utilisateur';
->>>>>>> 5942875 (feat: UI/UX improvements - responsive fixes, modern bottom nav, favicon, heading scale)
 
   return (
     <div className="profil-page">
