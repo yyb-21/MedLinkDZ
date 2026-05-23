@@ -63,6 +63,7 @@ export const createAnnonce = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Wilaya invalide.' });
         }
 
+
         const wilaya = await catalogService.getWilayaById(wilaya_id);
         if (!wilaya) {
             return res.status(400).json({ success: false, message: 'Wilaya introuvable.' });

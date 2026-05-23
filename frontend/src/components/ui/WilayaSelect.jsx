@@ -50,14 +50,14 @@ export default function WilayaSelect({
   // Support both API format (nom_fr) and static format (name)
   const getName = (w) => w.nom_fr || w.name || '';
 
-  const selectedWilaya = options.find(w => String(w.id) === String(value));
-  const displayValue = selectedWilaya ? `${selectedWilaya.id} - ${selectedWilaya.name}` : placeholder;
+  const selectedWilaya = normalizedOptions.find(w => String(w.id) === String(value));
+  const displayValue = selectedWilaya ? `${selectedWilaya.id} - ${getName(selectedWilaya)}` : placeholder;
 
   return (
     <div className={`input-group ${error ? 'has-error' : ''} ${className}`} ref={containerRef}>
       {label && <label className="input-label">{label}</label>}
-      
-      <div 
+
+      <div
         className={`select-wrapper custom-select ${isOpen ? 'is-open' : ''}`}
         onClick={toggleDropdown}
       >
@@ -65,15 +65,15 @@ export default function WilayaSelect({
         <div className={`select-field-display ${!value ? 'is-placeholder' : ''}`}>
           {displayValue}
         </div>
-        <ChevronDown 
-          className="select-icon-right" 
-          size={16} 
+        <ChevronDown
+          className="select-icon-right"
+          size={16}
           style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}
         />
-        
+
         <AnimatePresence>
           {isOpen && (
-            <motion.div 
+            <motion.div
               className={`select-dropdown ${dropdownDirection === 'up' ? 'opens-up' : ''}`}
               initial={{ opacity: 0, y: dropdownDirection === 'up' ? 10 : -10, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -82,8 +82,8 @@ export default function WilayaSelect({
             >
               <ul className="select-options-list custom-scrollbar">
                 {normalizedOptions.map(w => (
-                  <li 
-                    key={w.id} 
+                  <li
+                    key={w.id}
                     className={`select-option ${String(value) === String(w.id) ? 'is-selected' : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -100,7 +100,7 @@ export default function WilayaSelect({
           )}
         </AnimatePresence>
       </div>
-      
+
       {error && <p className="input-error-msg">{error}</p>}
     </div>
   );

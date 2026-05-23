@@ -48,9 +48,9 @@ export default function PublierPage() {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    catalogApi.wilayas().then(r => setWilayas(r.wilayas || r)).catch(() => {});
-    catalogApi.medicaments().then(r => setMedicaments(r.medicaments || r)).catch(() => {});
-    catalogApi.categories().then(r => setCategories(r.categories || r)).catch(() => {});
+    catalogApi.wilayas().then(r => setWilayas(r.wilayas || r)).catch(() => { });
+    catalogApi.medicaments().then(r => setMedicaments(r.medicaments || r)).catch(() => { });
+    catalogApi.categories().then(r => setCategories(r.categories || r)).catch(() => { });
   }, []);
 
   const set = (key) => (e) => setForm({ ...form, [key]: e?.target?.value ?? e });
@@ -58,7 +58,7 @@ export default function PublierPage() {
   const canNext = () => {
     if (step === 1) return !!form.type;
     if (step === 2) return form.name && form.category && !!form.quantity && /^\d+$/.test(form.quantity);
-    if (step === 3) return !!form.wilaya && !!form.contact.trim();
+    if (step === 3) return !!form.wilaya;
     return true;
   };
 
@@ -100,10 +100,10 @@ export default function PublierPage() {
       const fd = new FormData();
       fd.append('type', form.type === 'offre' ? 'DON' : 'DEMANDE');
       fd.append('wilaya_id', wilaya_id);
-      
+
       // Send the name as medicament_name, backend will find or create it
       fd.append('medicament_name', form.name);
-      
+
       fd.append('quantite', quantite);
       if (form.description) fd.append('description', form.description);
       if (form.image) fd.append('images', form.image);

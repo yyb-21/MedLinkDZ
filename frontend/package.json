@@ -5,8 +5,11 @@
   "description": "MedLink DZ — plateforme d'entraide médicale (frontend + backend)",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix backend run start"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.0.1",
