@@ -110,9 +110,7 @@ export default function ProfilPage() {
   }
 
 
-  const avatarSrc = avatarPreview || assetUrl(user.avatar_url); // DB column is 'avatar_url'
-
-  const avatarSrc = avatarPreview || assetUrl(user.avatar);
+  const avatarSrc = avatarPreview || assetUrl(user.avatar_url); // DB column is 'avatar_url
   const isVerified = !!user.is_verified;
   const roleLabel = user.role === 'ADMIN' ? 'Administrateur' : 'Utilisateur';
 
