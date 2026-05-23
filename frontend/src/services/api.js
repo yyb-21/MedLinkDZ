@@ -87,6 +87,10 @@ export const adminApi = {
     api.patch(`/api/admin/moderate/${id}`, { statut }).then(r => r.data),
   moderateOrdonnance: (id, payload) =>
     api.patch(`/api/admin/ordonnance/${id}`, payload).then(r => r.data),
+  suspendUser: (id, suspend) =>
+    api.patch(`/api/admin/users/${id}/suspend`, { suspend }).then(r => r.data),
+  deleteUser: (id) =>
+    api.delete(`/api/admin/users/${id}`).then(r => r.data),
 };
 
 /* Build absolute URL for backend-hosted assets (e.g. avatar_url = "/uploads/..."). */

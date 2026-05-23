@@ -1,5 +1,6 @@
 import * as adminService from '../services/adminService.js';
 import * as ordonnanceService from '../services/ordonnanceService.js';
+import * as userService from '../services/userService.js';
 
 // GET /api/admin/stats
 export const getStats = async (req, res) => {     //to get the stats of
@@ -84,6 +85,51 @@ export const getUsersWithAnnonces = async (req, res) => {
         res.status(200).json({ success: true, users });
     } catch (error) {
         console.error('Error fetching users:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur.' });
+    }
+};
+
+// PATCH /api/admin/users/:id/suspend
+export const suspendUser = async (req, res) => {
+    try {
+        const { suspend } = req.body;
+        if (typeof suspend !== 'boolean') {
+            return res.status(400).json({ success: false, message: 'Le champ "suspend" (booléen) est requis.' });
+        }
+        
+        // Prevent admin from suspending themselves
+        if (parseInt(req.params.id) === req.user.id) {
+            return res.status(403).json({ success: false, message: 'Vous ne pouvez pas suspendre votre propre compte.' });
+        }
+
+        const updatedUser = await userService.suspendUser(req.params.id, suspend);
+        if (!updatedUser) {
+            return res.status(404).json({ success: false, message: 'Utilisateur non trouvé.' });
+        }
+
+        res.status(200).json({ success: true, message: `Utilisateur ${suspend ? 'suspendu' : 'réactivé'} avec succès.`, user: updatedUser });
+    } catch (error) {
+        console.error('Error suspending user:', error);
+        res.status(500).json({ success: false, message: 'Erreur serveur.' });
+    }
+};
+
+// DELETE /api/admin/users/:id
+export const deleteUser = async (req, res) => {
+    try {
+        // Prevent admin from deleting themselves
+        if (parseInt(req.params.id) === req.user.id) {
+            return res.status(403).json({ success: false, message: 'Vous ne pouvez pas supprimer votre propre compte.' });
+        }
+
+        const deleted = await userService.deleteUser(req.params.id);
+        if (!deleted) {
+            return res.status(404).json({ success: false, message: 'Utilisateur non trouvé.' });
+        }
+
+        res.status(200).json({ success: true, message: 'Utilisateur supprimé avec succès.' });
+    } catch (error) {
+        console.error('Error deleting user:', error);
         res.status(500).json({ success: false, message: 'Erreur serveur.' });
     }
 };

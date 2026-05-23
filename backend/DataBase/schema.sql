@@ -16,6 +16,7 @@ CREATE TABLE users (
     role RoleEnum DEFAULT 'USER',
     avatar_url VARCHAR(255),
     is_verified BOOLEAN DEFAULT FALSE,
+    is_suspended BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

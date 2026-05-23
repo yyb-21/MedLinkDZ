@@ -61,7 +61,7 @@ export const moderateAnnonce = async (annonceId, moderatorId, statut) => {
 // Get all users with their annonce counts
 export const getUsersWithAnnonceCounts = async () => {
     const query = `
-        SELECT u.id, u.nom, u.prenom, u.email, u.phone, u.role, u.is_verified, u.created_at,
+        SELECT u.id, u.nom, u.prenom, u.email, u.phone, u.role, u.is_verified, u.is_suspended, u.created_at,
                COUNT(a.id)::int AS annonce_count
         FROM users u
         LEFT JOIN annonces a ON a.user_id = u.id

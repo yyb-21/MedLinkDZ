@@ -21,7 +21,7 @@ export const findUserByEmail = async (email) => {
 
 // Find a user by ID (excludes password_hash)
 export const findUserById = async (id) => {
-    const query = 'SELECT id, nom, prenom, email, phone, role, avatar_url, is_verified, created_at FROM users WHERE id = $1';
+    const query = 'SELECT id, nom, prenom, email, phone, role, avatar_url, is_verified, is_suspended, created_at FROM users WHERE id = $1';
     const result = await pool.query(query, [id]);
     return result.rows.length > 0 ? result.rows[0] : null;
 };
@@ -70,4 +70,23 @@ export const verifyUserEmail = async (id) => {
 export const countUsers = async () => {
     const result = await pool.query('SELECT COUNT(*) FROM users');
     return parseInt(result.rows[0].count);
+};
+
+// Toggle user suspension
+export const suspendUser = async (id, suspend) => {
+    const query = `
+        UPDATE users
+        SET is_suspended = $1
+        WHERE id = $2
+        RETURNING id, nom, prenom, email, role, is_suspended
+    `;
+    const result = await pool.query(query, [suspend, id]);
+    return result.rows[0];
+};
+
+// Delete user permanently
+export const deleteUser = async (id) => {
+    const query = `DELETE FROM users WHERE id = $1 RETURNING id`;
+    const result = await pool.query(query, [id]);
+    return result.rows[0];
 };

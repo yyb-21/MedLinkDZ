@@ -86,6 +86,13 @@ export const loginUser = async (req, res) => {
             });
         }
 
+        if (user.is_suspended) {
+            return res.status(403).json({
+                success: false,
+                message: 'Votre compte a été suspendu par un administrateur.'
+            });
+        }
+
         // Generate JWT token
         const token = generateToken(user);
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Users, FileText, Activity, CheckCircle2, Loader2, Mail, Phone, ShieldCheck } from 'lucide-react';
+import { Users, FileText, Activity, CheckCircle2, Loader2, Mail, Phone, ShieldCheck, Ban, Trash2, RefreshCw } from 'lucide-react';
 import { adminApi } from '../../services/api';
 import './AdminLayout.css';
 
@@ -39,6 +39,27 @@ export default function StatsPage() {
     };
     fetchData();
   }, []);
+
+  const handleSuspend = async (id, suspend) => {
+    if (!window.confirm(`Voulez-vous vraiment ${suspend ? 'suspendre' : 'réactiver'} cet utilisateur ?`)) return;
+    try {
+      const res = await adminApi.suspendUser(id, suspend);
+      setUsers(users.map(u => u.id === id ? { ...u, is_suspended: suspend } : u));
+    } catch (err) {
+      alert(err?.response?.data?.message || 'Erreur lors de l\'opération');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Voulez-vous VRAIMENT supprimer cet utilisateur ? Cette action est irréversible et supprimera toutes ses annonces.')) return;
+    try {
+      await adminApi.deleteUser(id);
+      setUsers(users.filter(u => u.id !== id));
+      setStats(prev => ({ ...prev, totalUsers: (prev.totalUsers || 1) - 1 }));
+    } catch (err) {
+      alert(err?.response?.data?.message || 'Erreur lors de la suppression');
+    }
+  };
 
   const val = (k) => stats?.[k] ?? stats?.counts?.[k] ?? 0;
 
@@ -94,6 +115,7 @@ export default function StatsPage() {
                       <th>Vérifié</th>
                       <th>Annonces</th>
                       <th>Inscrit le</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -102,7 +124,18 @@ export default function StatsPage() {
                       return (
                         <tr key={u.id}>
                           <td style={{ color: 'rgba(0,0,0,0.4)', fontWeight: 500 }}>{i + 1}</td>
-                          <td style={{ fontWeight: 600 }}>{u.prenom} {u.nom}</td>
+                          <td style={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            {u.prenom} {u.nom}
+                            {u.is_suspended && (
+                              <span style={{
+                                fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase',
+                                padding: '0.1rem 0.35rem', borderRadius: '4px',
+                                background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b', border: '1px solid rgba(245, 158, 11, 0.2)'
+                              }}>
+                                Suspendu
+                              </span>
+                            )}
+                          </td>
                           <td>
                             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                               <Mail size={13} style={{ opacity: 0.5 }} />
@@ -159,6 +192,32 @@ export default function StatsPage() {
                           </td>
                           <td style={{ fontSize: '0.82rem', color: 'rgba(0,0,0,0.55)' }}>
                             {formatDate(u.created_at)}
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                              <button
+                                onClick={() => handleSuspend(u.id, !u.is_suspended)}
+                                title={u.is_suspended ? 'Réactiver le compte' : 'Suspendre le compte'}
+                                style={{
+                                  background: 'none', border: 'none', cursor: 'pointer',
+                                  color: u.is_suspended ? '#10b981' : '#f59e0b',
+                                  display: 'flex', alignItems: 'center', padding: '0.2rem'
+                                }}
+                              >
+                                {u.is_suspended ? <RefreshCw size={16} /> : <Ban size={16} />}
+                              </button>
+                              <button
+                                onClick={() => handleDelete(u.id)}
+                                title="Supprimer le compte"
+                                style={{
+                                  background: 'none', border: 'none', cursor: 'pointer',
+                                  color: '#ef4444',
+                                  display: 'flex', alignItems: 'center', padding: '0.2rem'
+                                }}
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
