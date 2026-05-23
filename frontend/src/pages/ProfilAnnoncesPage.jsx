@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Loader2, Package, Plus } from 'lucide-react';
+import { ArrowLeft, Loader2, Package, Plus, Trash2 } from 'lucide-react';
 import PremiumButton from '../components/ui/PremiumButton';
 import FadeUp from '../components/animations/FadeUp';
 import { annonceApi } from '../services/api';
@@ -12,6 +12,7 @@ export default function ProfilAnnoncesPage() {
   const navigate = useNavigate();
   const [annonces, setAnnonces] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -32,6 +33,20 @@ export default function ProfilAnnoncesPage() {
       mounted = false;
     };
   }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer cette annonce ?')) return;
+    setDeletingId(id);
+    try {
+      await annonceApi.remove(id);
+      setAnnonces((prev) => prev.filter((a) => a.id !== id));
+    } catch (error) {
+      console.error('Erreur lors de la suppression', error);
+      alert('Impossible de supprimer cette annonce.');
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <div className="profil-page profil-annonces-page">
@@ -132,9 +147,19 @@ export default function ProfilAnnoncesPage() {
                         </span>
                       </div>
                     </div>
-                    <span className={`status-badge status-badge--${statusClass}`}>
-                      {statusLabel}
-                    </span>
+                    <div className="profil-annonce-item__right">
+                      <span className={`status-badge status-badge--${statusClass}`}>
+                        {statusLabel}
+                      </span>
+                      <button 
+                        className="profil-annonce-item__delete"
+                        onClick={() => handleDelete(a.id)}
+                        disabled={deletingId === a.id}
+                        title="Supprimer l'annonce"
+                      >
+                        {deletingId === a.id ? <Loader2 size={16} className="profil-spin" /> : <Trash2 size={16} />}
+                      </button>
+                    </div>
                   </motion.div>
                 );
               })}
