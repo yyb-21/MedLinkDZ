@@ -110,7 +110,7 @@ a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; }
 button:focus-visible,
 a:focus-visible,
-input:focus-visible,
+input:focus-visible:not(.search-bar__input):not(.search-field__input),
 textarea:focus-visible,
 select:focus-visible,
 [role="button"]:focus-visible {
