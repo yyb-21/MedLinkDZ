@@ -30,6 +30,9 @@ const ProfilAnnoncesPage = lazy(() => import('./pages/ProfilAnnoncesPage'));
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const ModerationPage = lazy(() => import('./pages/admin/ModerationPage'));
 const StatsPage = lazy(() => import('./pages/admin/StatsPage'));
+const FAQPage = lazy(() => import('./pages/FAQPage'));
+const ConditionsPage = lazy(() => import('./pages/ConditionsPage'));
+const ConfidentialitePage = lazy(() => import('./pages/ConfidentialitePage'));
 
 function App() {
   return (
@@ -54,6 +57,9 @@ function App() {
               </Suspense>
             }
           />
+          <Route path="faq" element={<Suspense fallback={<RouteFallback />}><FAQPage /></Suspense>} />
+          <Route path="conditions" element={<Suspense fallback={<RouteFallback />}><ConditionsPage /></Suspense>} />
+          <Route path="confidentialite" element={<Suspense fallback={<RouteFallback />}><ConfidentialitePage /></Suspense>} />
           <Route
             path="annonce/:id"
             element={

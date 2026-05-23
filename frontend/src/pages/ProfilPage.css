@@ -395,6 +395,18 @@
   border: 1px solid var(--c-border);
 }
 
+.status-badge--rejected {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444; /* red-500 */
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.status-badge--pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b; /* amber-500 */
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
 .profil-empty {
   text-align: center;
   padding: 3rem 1rem;
@@ -418,7 +430,8 @@
     flex-wrap: wrap;
   }
   .profil-hero__right > * {
-    flex: 1 1 0;
+    flex: 1 1 auto;
+    min-width: max-content;
     justify-content: center;
   }
 }

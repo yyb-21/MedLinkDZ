@@ -91,7 +91,28 @@ export default function ProfilAnnoncesPage() {
               {annonces.map((a, i) => {
                 const status = (a.status || a.statut || '').toLowerCase();
                 const type = (a.type || '').toLowerCase();
-                const date = a.createdAt || a.date;
+                const date = a.created_at || a.createdAt || a.date;
+                const nomMedicament = a.marque || a.dci || a.medicamentNom || a.name || a.titre;
+
+                // Better status mapping
+                let statusLabel = 'Terminée';
+                let statusClass = 'closed';
+                if (status === 'publiee') {
+                  statusLabel = 'Publiée';
+                  statusClass = 'active';
+                } else if (status === 'en_attente') {
+                  statusLabel = 'En attente';
+                  statusClass = 'pending';
+                } else if (status === 'rejetee') {
+                  statusLabel = 'Rejetée';
+                  statusClass = 'rejected';
+                } else if (status === 'terminee' || status === 'cloturee') {
+                  statusLabel = 'Terminée';
+                  statusClass = 'closed';
+                } else {
+                  statusLabel = a.statut || 'Terminée';
+                }
+
                 return (
                   <motion.div
                     key={a.id}
@@ -101,18 +122,18 @@ export default function ProfilAnnoncesPage() {
                     transition={{ delay: i * 0.05 }}
                   >
                     <div className="profil-annonce-item__left">
-                      <span className={`pm-badge pm-badge--${type === 'offre' ? 'offre' : 'demande'}`}>
-                        {type === 'offre' ? '↑' : '↓'}
+                      <span className={`pm-badge pm-badge--${type === 'demande' ? 'demande' : 'offre'}`}>
+                        {type === 'demande' ? '↓' : '↑'}
                       </span>
                       <div>
-                        <span className="profil-annonce-item__name">{a.medicamentNom || a.name || a.titre}</span>
+                        <span className="profil-annonce-item__name">{nomMedicament}</span>
                         <span className="profil-annonce-item__date">
                           {date ? new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' }) : ''}
                         </span>
                       </div>
                     </div>
-                    <span className={`status-badge status-badge--${status === 'active' ? 'active' : 'closed'}`}>
-                      {status === 'active' ? 'Active' : 'Terminée'}
+                    <span className={`status-badge status-badge--${statusClass}`}>
+                      {statusLabel}
                     </span>
                   </motion.div>
                 );

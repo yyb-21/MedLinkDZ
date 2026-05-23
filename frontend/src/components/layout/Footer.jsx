@@ -17,9 +17,9 @@ const FOOTER_NAV = [
     title: 'Informations',
     links: [
       { label: 'Comment ça marche', to: '/#how-it-works' },
-      { label: 'Conditions d\'utilisation', to: '#' },
-      { label: 'Politique de confidentialité', to: '#' },
-      { label: 'FAQ', to: '#' },
+      { label: 'Conditions d\'utilisation', to: '/conditions' },
+      { label: 'Politique de confidentialité', to: '/confidentialite' },
+      { label: 'FAQ', to: '/faq' },
     ],
   },
 ];

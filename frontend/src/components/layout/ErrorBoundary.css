@@ -5,32 +5,60 @@
   min-height: 100vh;
   padding: 2rem;
   background: var(--c-bg-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+.error-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.08) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .error-card {
-  max-width: 400px;
+  max-width: 440px;
   width: 100%;
-  padding: 3rem;
+  padding: 3rem 2rem;
   text-align: center;
-  border-radius: var(--r-xl);
+  border-radius: var(--r-2xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.44), 0 0 0 1px rgba(239, 68, 68, 0.15);
 }
 
-.error-card h1 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
+.error-icon-wrapper {
+  color: var(--c-red-500);
+  background: rgba(239, 68, 68, 0.1);
+  padding: 1.2rem;
+  border-radius: 50%;
+  display: inline-flex;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
-.error-card p {
+.error-title {
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  color: var(--c-text-primary);
+  line-height: 1.3;
+}
+
+.error-desc {
   color: var(--c-text-muted);
+  font-size: 1rem;
+  line-height: 1.5;
   margin-bottom: 2rem;
 }
 
-.error-card button {
-  background: var(--c-green-500);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--r-md);
-  font-weight: 600;
-  cursor: pointer;
+.error-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }

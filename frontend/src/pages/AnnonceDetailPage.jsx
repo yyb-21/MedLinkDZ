@@ -19,7 +19,6 @@ export default function AnnonceDetailPage() {
   const [annonce, setAnnonce] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [liked, setLiked] = useState(false);
   const [showContact, setShowContact] = useState(false);
 
   useEffect(() => {
@@ -199,19 +198,10 @@ export default function AnnonceDetailPage() {
                     <span className="contact-revealed__number">{annonce.contact}</span>
                   </motion.div>
                 )}
-
-                <div className="author-card__actions">
-                  <button className={`action-btn ${liked ? 'liked' : ''}`} onClick={() => setLiked(!liked)}>
-                    <Heart size={16} fill={liked ? 'currentColor' : 'none'} /> {liked ? 'Sauvegardé' : 'Sauvegarder'}
-                  </button>
-                  <button className="action-btn">
-                    <Share2 size={16} /> Partager
-                  </button>
-                </div>
               </div>
 
               {/* Safety note */}
-              <div className="safety-note glass">
+              <div className="safety-note glass" style={{ marginTop: '1.5rem' }}>
                 <AlertCircle size={16} />
                 <div>
                   <strong>Conseils de sécurité</strong>

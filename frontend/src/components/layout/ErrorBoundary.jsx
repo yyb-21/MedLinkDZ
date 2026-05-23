@@ -1,7 +1,10 @@
 import React from 'react';
+import { AlertOctagon, RefreshCcw } from 'lucide-react';
+import PremiumButton from '../ui/PremiumButton';
+import FadeUp from '../animations/FadeUp';
 import './ErrorBoundary.css';
 
-export default class ErrorBoundary extends React.Component {
+class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false };
@@ -19,11 +22,27 @@ export default class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="error-boundary">
-          <div className="error-card glass">
-            <h1>Oups ! 😕</h1>
-            <p>Une erreur inattendue est survenue.</p>
-            <button onClick={() => window.location.reload()}>Rafraîchir la page</button>
-          </div>
+          <div className="error-glow" />
+          <FadeUp>
+            <div className="error-card glass">
+              <div className="error-icon-wrapper">
+                <AlertOctagon size={48} />
+              </div>
+              <h1 className="error-title">Une erreur inattendue est survenue</h1>
+              <p className="error-desc">
+                Nous sommes désolés, mais un problème technique nous empêche d'afficher cette page correctement.
+              </p>
+              <div className="error-actions">
+                <PremiumButton 
+                  variant="primary" 
+                  icon={RefreshCcw}
+                  onClick={() => window.location.reload()}
+                >
+                  Rafraîchir la page
+                </PremiumButton>
+              </div>
+            </div>
+          </FadeUp>
         </div>
       );
     }
@@ -31,3 +50,5 @@ export default class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
+
+export default ErrorBoundary;
