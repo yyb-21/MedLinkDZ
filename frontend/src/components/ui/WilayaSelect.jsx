@@ -51,7 +51,11 @@ export default function WilayaSelect({
   const getName = (w) => w.nom_fr || w.name || '';
 
   const selectedWilaya = normalizedOptions.find(w => String(w.id) === String(value));
+
   const displayValue = selectedWilaya ? `${selectedWilaya.id} - ${getName(selectedWilaya)}` : placeholder;
+
+  const displayValue = selectedWilaya ? `${selectedWilaya.id} - ${selectedWilaya.name}` : placeholder;
+
 
   return (
     <div className={`input-group ${error ? 'has-error' : ''} ${className}`} ref={containerRef}>
