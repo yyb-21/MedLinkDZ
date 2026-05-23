@@ -9,12 +9,9 @@ import Skeleton, { CardSkeleton } from '../components/ui/Skeleton';
 import { annonceApi, assetUrl } from '../services/api';
 import './SearchPage.css';
 
-const CATEGORIES = ['Tous', 'Antibiotiques', 'Cardiovasculaire', 'Diabète', 'Neurologie', 'Oncologie', 'Dermatologie', 'Pédiatrie', 'Ophtalmologie'];
-
 export default function SearchPage() {
   const [query, setQuery] = useState('');
   const [selectedType, setSelectedType] = useState('all');
-  const [selectedCategory, setSelectedCategory] = useState('Tous');
   const [selectedWilaya, setSelectedWilaya] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,8 +31,8 @@ export default function SearchPage() {
             id: annonce.id,
             type: annonce.type === 'DON' ? 'offre' : 'demande',
             name: annonce.dci || annonce.marque || 'Médicament',
-            category: annonce.categorie_nom || 'Autre',
-            wilaya: annonce.wilaya_nom || 'N/A',
+            wilayaId: annonce.wilaya_id,
+            wilayaNom: annonce.wilaya_nom || 'N/A',
             date: annonce.created_at || new Date().toISOString(),
             imageUrl: annonce.imageUrl ? assetUrl(annonce.imageUrl) : null,
           }));
@@ -59,13 +56,12 @@ export default function SearchPage() {
     return allAnnonces.filter(a => {
       const matchQuery = !query || a.name.toLowerCase().includes(query.toLowerCase());
       const matchType = selectedType === 'all' || a.type === selectedType;
-      const matchCat = selectedCategory === 'Tous' || a.category === selectedCategory;
-      const matchWilaya = !selectedWilaya || a.wilaya === selectedWilaya;
-      return matchQuery && matchType && matchCat && matchWilaya;
+      const matchWilaya = !selectedWilaya || String(a.wilayaId) === String(selectedWilaya);
+      return matchQuery && matchType && matchWilaya;
     });
-  }, [query, selectedType, selectedCategory, selectedWilaya, allAnnonces]);
+  }, [query, selectedType, selectedWilaya, allAnnonces]);
 
-  const activeFilterCount = [selectedType !== 'all', selectedCategory !== 'Tous', selectedWilaya].filter(Boolean).length;
+  const activeFilterCount = [selectedType !== 'all', selectedWilaya].filter(Boolean).length;
   const hasPublishedAnnonces = allAnnonces.length > 0;
 
   return (
@@ -147,22 +143,6 @@ export default function SearchPage() {
                   </div>
                 </div>
 
-                {/* Category Pills */}
-                <div className="filter-group">
-                  <label className="filter-label">Catégorie</label>
-                  <div className="cat-pills">
-                    {CATEGORIES.map(c => (
-                      <button
-                        key={c}
-                        className={`cat-pill ${selectedCategory === c ? 'active' : ''}`}
-                        onClick={() => setSelectedCategory(c)}
-                      >
-                        {c}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
                 {/* Wilaya */}
                 <div className="filter-group filter-group--wilaya">
                   <WilayaSelect
@@ -177,7 +157,6 @@ export default function SearchPage() {
                 {activeFilterCount > 0 && (
                   <button className="clear-filters-btn" onClick={() => {
                     setSelectedType('all');
-                    setSelectedCategory('Tous');
                     setSelectedWilaya('');
                   }}>
                     <X size={14} /> Réinitialiser les filtres
