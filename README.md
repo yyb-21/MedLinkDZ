@@ -6,7 +6,7 @@
 ### Plateforme algérienne de partage de médicaments
 
 Relier les personnes ayant des médicaments non utilisés  
-avec celles qui en ont besoin — à travers les **58 wilayas d’Algérie 🇩🇿**
+avec celles qui en ont besoin — à travers les **69 wilayas d’Algérie 🇩🇿**
 
 <br/>
 
